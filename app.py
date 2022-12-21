@@ -1,6 +1,7 @@
 from uuid import uuid4
 from flask import Flask, jsonify, request
 from blockchain import*
+from ecc import*
 
 # initiate the node
 app = Flask(__name__)
@@ -8,20 +9,31 @@ app = Flask(__name__)
 node_identifier = str(uuid4()).replace('-', '')
 # initiate the Blockchain
 blockchain = BlockChain()
+# set the basecoin
+eth_k = generate_eth_key()
+pk = eth_k.public_key
+baseCoin = getAddress(pk.to_hex())
 
 @app.route('/mine', methods=['GET'])
 def mine():
+    # Ensure nodes are synchronized
     blockchain.resolve_conflicts()
+
+    '''
+        Apply consensus algorithm to choose the miner
+        Pow algorithm is used
+    
+    '''
     # first we need to run the proof of work algorithm to calculate the new proof..
     last_block = blockchain.last_block
     last_proof = last_block['proof']
     proof = blockchain.proof_of_work(last_proof)
 
-    # we must recieve reward for finding the proof in form of receiving 1 Coin
+    # we must recieve reward for finding the proof in form of receiving 100 Coin
     blockchain.new_transaction(
         sender=0,
-        recipient=node_identifier,
-        amount=1,
+        recipient=baseCoin,
+        amount=100,
     )
 
     # forge the new block by adding it to the chain
@@ -114,3 +126,17 @@ def consensus():
         'chain': blockchain.chain,
     }
     return jsonify(response), 200
+
+
+@app.route('/changeBasecoin', methods=['GET'])
+def changeBasecoin():
+    values = request.get_json()
+
+    print('values', values)
+    global baseCoin
+    baseCoin = values.get('baseCoin')
+
+    response = {
+        'Basecoin': baseCoin
+    }
+    return jsonify(response, 200)
