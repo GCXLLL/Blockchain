@@ -23,7 +23,7 @@ class BlockChain(object):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
-    def new_block(self, proof, previous_hash=None):
+    def new_block(self, proof, rxRoot, tranRoot, stateRoot, previous_hash=None):
         # creates a new block in the blockchain
         block = {
             'index': len(self.chain)+1,
@@ -31,6 +31,9 @@ class BlockChain(object):
             'transactions': self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
+            'receiptsRoot': rxRoot,
+            'transactionRoot': tranRoot,
+            'stateRoot': stateRoot
         }
 
         # reset the current list of transactions
