@@ -1,10 +1,11 @@
+import binascii
 import hashlib
 import json
 import requests
 from time import time
 from urllib.parse import urlparse
 from ecc import*
-
+from level1db import Level1db
 
 
 class BlockChain(object):
@@ -167,6 +168,55 @@ class BlockChain(object):
                 self.current_transactions.remove(tran)
         return True
 
+    def get_root_hash(self):
+        '''
+        change the world state by transactions
+        get state root
+        get transaction root
+        :return:
+        state root: str
+        transaction root: str
+        flag: bool
+        '''
+        # find the last world state
+        last_block = self.last_block()
+        last_stateRoot = last_block['stateRoot']
+        root = binascii.unhexlify(last_stateRoot)
+        # get the world state MPT
+        trie = Level1db(root=root)
+        # update world state by transactions
+        for tran in self.current_transactions:
+            sender = tran['sender']
+            recipient = tran['recipient']
+            value = tran['value']
+            tran_hash = tran['hash']
+            # check sender
+            if sender != 0:
+                # not the reward for miner
+                try:
+                    balance_sender = int(trie.get(sender.encode()).decode())
+                except:
+                    # sender not exist
+                    return '', '', False
+                if value <= balance_sender:
+                    balance_sender = balance_sender - value
+                else:
+                    # no enough balance
+                    return '', '', False
+            # update the balance of sender
+            trie.update(sender.encode(), str(balance_sender).encode())
+            try:
+                balance_recipient = int(trie.get(recipient.encode()).decode())
+                balance_recipient = balance_recipient + value
+            except:
+                balance_recipient = value
+            # update the balance of recipient
+            trie.update(recipient.encode(), str(balance_recipient).encode())
+
+            # put transactions in level2db
+
+        # get the present state root
+        stateRoot = trie.root().hex()
 
 
 # if __name__ == '__main__':

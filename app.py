@@ -50,7 +50,7 @@ def mine():
     if blockchain.valid_transaction():
         pass
     else:
-        return jsonify('There is invalid transactions', 500)
+        return jsonify('There is invalid transaction', 500)
 
     block = blockchain.new_block(proof, previous_hash)
 
