@@ -3,7 +3,7 @@ import json
 import requests
 from time import time
 from urllib.parse import urlparse
-
+from ecc import*
 
 
 
@@ -46,13 +46,25 @@ class BlockChain(object):
         # returns last block in the chain
         return self.chain[-1]
 
-    def new_transaction(self, sender, recipient, amount):
+    def new_transaction(self, sender, recipient, amount, data, nonce, sk=None):
+        # get hash value of transaction
+        baseTran = {
+            'sender': sender,
+            'recipient': recipient,
+            'value': amount,
+            'data': data,
+            'nonce': nonce
+        }
+        hash = self.hash(baseTran)
         # adds a new transaction into the list of transactions
         # these transactions go into the next mined block
         self.current_transactions.append({
-            "sender": sender,
-            "recipient": recipient,
-            "data": amount,
+            'sender': sender,
+            'recipient': recipient,
+            'value': amount,
+            'data': data,
+            'hash': hash,
+            'sign': sk.sign_msg(hash.encode())
         })
         return int(self.last_block['index'])+1
 
@@ -141,6 +153,19 @@ class BlockChain(object):
             return True
 
         return False
+
+    def valid_transaction(self):
+        for tran in self.current_transactions:
+            if tran['sender'] == 0:
+                # reward for miner
+                pass
+            elif tran['sender'] == getAddress(tran['sign'].recover_public_key_from_msg(tran['hash'].encode()).to_hex()):
+                # verify the signature
+                pass
+            else:
+                # delete the invalid transaction
+                self.current_transactions.remove(tran)
+        return True
 
 
 

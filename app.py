@@ -13,6 +13,8 @@ blockchain = BlockChain()
 eth_k = generate_eth_key()
 pk = eth_k.public_key
 baseCoin = getAddress(pk.to_hex())
+# number of transactions
+nonce_tran = 0
 
 @app.route('/mine', methods=['GET'])
 def mine():
@@ -34,10 +36,22 @@ def mine():
         sender=0,
         recipient=baseCoin,
         amount=100,
+        data='Mining',
+        nonce=nonce_tran + 1,
     )
 
-    # forge the new block by adding it to the chain
+    '''
+        forge the new block by adding it to the chain
+    '''
+    # get previous hash
     previous_hash = blockchain.hash(last_block)
+
+    # verify the validity of transactions
+    if blockchain.valid_transaction():
+        pass
+    else:
+        return jsonify('There is invalid transactions', 500)
+
     block = blockchain.new_block(proof, previous_hash)
 
     response = {
@@ -46,6 +60,9 @@ def mine():
         'transactions': block['transactions'],
         'proof': block['proof'],
         'previous_hash': block['previous_hash'],
+        'receiptsRoot': block['receiptsRoot'],
+        'transactionRoot': block['transactionRoot'],
+        'stateRoot': block['stateRoot']
     }
     return jsonify(response, 200)
 

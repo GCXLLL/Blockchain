@@ -16,7 +16,8 @@ print('Publickey: ', pk_hex)
 '''Sign and verify'''
 data = b'this is a test'
 data1 = b'this is a test'
-print(eth_k.sign_msg(data).verify_msg(data1, eth_k.public_key))
+print(eth_k.sign_msg(data).recover_public_key_from_msg(data))
+# print(eth_k.sign_msg(data).verify_msg(data1, eth_k.public_key))
 
 '''Encryption'''
 # mtext = encrypt(sk_hex, data)
@@ -24,4 +25,4 @@ print(eth_k.sign_msg(data).verify_msg(data1, eth_k.public_key))
 # ptext = decrypt(pk_hex, mtext)
 # print(ptext)
 
-print(getAddress(pk_hex))
+print(getAddress(pk_hex)==getAddress(eth_k.sign_msg(data).recover_public_key_from_msg(data).to_hex()))
