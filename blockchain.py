@@ -31,7 +31,7 @@ class BlockChain(object):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
-    def new_block(self, proof, rxRoot, tranRoot, stateRoot, previous_hash=None):
+    def new_block(self, proof, tranRoot, stateRoot, previous_hash=None):
 
         rxRoot = tranRoot # not consider tranRoot currently
         # creates a new block in the blockchain
@@ -45,10 +45,15 @@ class BlockChain(object):
             'transactionRoot': tranRoot,
             'stateRoot': stateRoot
         }
-
         # reset the current list of transactions
         self.current_transactions = []
         self.chain.append(block)
+
+        # store in leveldb
+        level2 = Level2db()
+        level2.putBlock(str(len(self.chain)+1), block)
+        level2.close()
+
         return block
 
     @property
@@ -238,6 +243,7 @@ class BlockChain(object):
         return stateRoot, transactionRoot, True
 
 
-# if __name__ == '__main__':
-#     trie = Level1db()
-#     test = Level2db()
+if __name__ == '__main__':
+    block = BlockChain()
+    block.init_genesis()
+
