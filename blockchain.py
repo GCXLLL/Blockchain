@@ -26,6 +26,8 @@ class BlockChain(object):
         return hashlib.sha256(block_string).hexdigest()
 
     def new_block(self, proof, rxRoot, tranRoot, stateRoot, previous_hash=None):
+
+        rxRoot = tranRoot # not consider tranRoot currently
         # creates a new block in the blockchain
         block = {
             'index': len(self.chain)+1,

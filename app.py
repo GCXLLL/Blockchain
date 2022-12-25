@@ -47,12 +47,20 @@ def mine():
     previous_hash = blockchain.hash(last_block)
 
     # verify the validity of transactions
-    if blockchain.valid_transaction():
-        pass
-    else:
+    if not blockchain.valid_transaction():
         return jsonify('There is invalid transaction', 500)
 
-    block = blockchain.new_block(proof, previous_hash)
+    # finish the work before mining
+    stateRoot, transactionRoot, flag = blockchain.work_before_mine()
+    if not flag:
+        return jsonify('No enough balance', 500)
+
+    # generate new block
+    block = blockchain.new_block(
+        proof=proof,
+        tranRoot=transactionRoot,
+        stateRoot=stateRoot,
+        previous_hash=previous_hash)
 
     response = {
         'message': "Forged new block.",
