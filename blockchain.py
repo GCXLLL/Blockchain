@@ -188,6 +188,7 @@ class BlockChain(object):
     def work_before_mine(self):
         '''
         change the world state by transactions
+        store valid transactions into leveldb
         get state root
         get transaction root
         :return:
@@ -244,6 +245,51 @@ class BlockChain(object):
         transactionRoot = level2.get_tran_hash()
 
         return stateRoot, transactionRoot, True
+
+    def get_transaction(self, tranHash):
+        '''
+        get transaction by hash
+        :param
+        tranHash: str
+        :return:
+        tran: dict
+        flag: bool
+        '''
+
+        level2 = Level2db()
+        try:
+            tran = level2.getTransaction(tranHash)
+            flag = True
+        except:
+            tran = {'Warning': 'No transaction found!'}
+            flag = False
+        level2.close()
+        return tran, flag
+
+    def get_balance(self, account):
+        '''
+        get the balance of the given account
+        :parameter:
+        account: str
+        :return:
+        balance: str
+        flag: bool
+        '''
+        # find the last world state
+        last_block = self.last_block()
+        last_stateRoot = last_block['stateRoot']
+        root = binascii.unhexlify(last_stateRoot)
+        # get the world state MPT
+        state = Level1db(root=root)
+        try:
+            balance = state.get(account.encode()).decode()
+            flag = True
+        except:
+            balance = 'Account not exist!'
+            flag = False
+        state.close()
+        return balance, flag
+
 
 
 if __name__ == '__main__':

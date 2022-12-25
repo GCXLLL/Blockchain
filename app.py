@@ -95,6 +95,15 @@ def new_transaction():
     }
     return jsonify(response, 200)
 
+@app.route('/transaction/find', methods=['GET'])
+def find_transaction():
+    values = request.get_json()
+    res, flag = blockchain.get_transaction(values['hash'])
+    if flag:
+        return jsonify(res, 200)
+    else:
+        return jsonify(res, 500)
+
 @app.route('/chain', methods=['GET'])
 def full_chain():
     blockchain.resolve_conflicts()
@@ -153,11 +162,9 @@ def consensus():
     return jsonify(response), 200
 
 
-@app.route('/changeBasecoin', methods=['GET'])
+@app.route('/account/changeBasecoin', methods=['GET'])
 def changeBasecoin():
     values = request.get_json()
-
-    print('values', values)
     global baseCoin
     baseCoin = values.get('baseCoin')
 
@@ -165,3 +172,12 @@ def changeBasecoin():
         'Basecoin': baseCoin
     }
     return jsonify(response, 200)
+
+@app.route('/account/getBalance', methods=['GET'])
+def getBalance():
+    values = request.get_json()
+    res, flag = blockchain.get_balance(values['account'])
+    if flag:
+        return jsonify(res, 200)
+    else:
+        return jsonify(res, 500)
