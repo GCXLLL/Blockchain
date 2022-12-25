@@ -15,8 +15,14 @@ class BlockChain(object):
         self.chain = []
         self.current_transactions = []
         self.nodes = set()
+
+    def init_genesis(self):
+        # find init world state
+        trie = Level1db()
+        stateRoot = trie.root_hash().hex()
+        trie.close()
         # create the genesis block
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, stateRoot=stateRoot, tranRoot=None, proof=100)
 
     @staticmethod
     def hash(block):
