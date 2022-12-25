@@ -6,6 +6,7 @@ from time import time
 from urllib.parse import urlparse
 from ecc import*
 from level1db import Level1db
+from level2db import Level2db
 
 
 class BlockChain(object):
@@ -168,7 +169,7 @@ class BlockChain(object):
                 self.current_transactions.remove(tran)
         return True
 
-    def get_root_hash(self):
+    def work_before_mine(self):
         '''
         change the world state by transactions
         get state root
@@ -184,6 +185,8 @@ class BlockChain(object):
         root = binascii.unhexlify(last_stateRoot)
         # get the world state MPT
         trie = Level1db(root=root)
+        # connect to level2db
+        level2 = Level2db()
         # update world state by transactions
         for tran in self.current_transactions:
             sender = tran['sender']
@@ -197,11 +200,15 @@ class BlockChain(object):
                     balance_sender = int(trie.get(sender.encode()).decode())
                 except:
                     # sender not exist
+                    trie.close()
+                    level2.close()
                     return '', '', False
                 if value <= balance_sender:
                     balance_sender = balance_sender - value
                 else:
                     # no enough balance
+                    trie.close()
+                    level2.close()
                     return '', '', False
             # update the balance of sender
             trie.update(sender.encode(), str(balance_sender).encode())
@@ -214,10 +221,15 @@ class BlockChain(object):
             trie.update(recipient.encode(), str(balance_recipient).encode())
 
             # put transactions in level2db
+            level2.putTransaction(tran_hash, tran)
 
-        # get the present state root
+        # get the present state root and transaction root
         stateRoot = trie.root().hex()
+        transactionRoot = level2.get_tran_hash()
+
+        return stateRoot, transactionRoot, True
 
 
 # if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000)
+#     trie = Level1db()
+#     test = Level2db()
