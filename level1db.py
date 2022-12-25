@@ -32,6 +32,9 @@ class Level1db:
         self._storage = plyvel.DB('./testdb', create_if_missing=True)
         self._root = root
         self._secure = secure
+    def close(self):
+        """ Close the object of leveldb """
+        self._storage.close()
 
     def root(self):
         """ Returns a root node of the trie. Type is `bytes` if trie isn't empty and `None` othrewise. """
