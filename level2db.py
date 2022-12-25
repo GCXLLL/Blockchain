@@ -9,6 +9,9 @@ class Level2db:
         self.transaction = {}
         self.block = {}
         self.receipt = {}
+        # for calculate the transaction root hash
+        self.storage = {}
+        self.trie = MerklePatriciaTrie(self.storage)
 
     def classify(self):
         with self.db.iterator() as it:
@@ -37,16 +40,31 @@ class Level2db:
         self.db.put(b'b'+index.encode(), rlp.encode(json.dumps(content)))
 
     def putTransaction(self, index: str, content):
+        self.trie.update(index.encode(), rlp.encode(json.dumps(content)))
         self.db.put(b't'+index.encode(), rlp.encode(json.dumps(content)))
 
     def putReceipt(self, index: str, content):
         self.db.put(b'r'+index.encode(), rlp.encode(json.dumps(content)))
 
+    def get_tran_hash(self):
+        '''
+
+        :return:
+        root hash: str
+
+        '''
+        return self.trie.root_hash().hex()
+
     def close(self):
         self.db.close()
 
 if __name__ == '__main__':
-    block1 = {'d': '1', 'c': '2'}
+    # block1 = {'d': '1', 'c': '2'}
+    # state = Level2db()
+    # state.putBlock('1', block1)
+    # print(state.getBlock('1'))
     state = Level2db()
-    state.putBlock('1', block1)
-    print(state.getBlock('1'))
+    print(state.get_tran_hash())
+    state.putTransaction('sfdsf', {'djdj': 2, 'dds': 'sdfd'})
+    print(state.get_tran_hash())
+    state.close()
