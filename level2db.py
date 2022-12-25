@@ -24,9 +24,13 @@ class Level2db:
                 elif key[0] == 't':
                     self.transaction[key[1:]] = json.loads(rlp.decode(v).decode())
 
-    def getBlock(self, index):
+    def get_all_blocks(self):
+        blocks = []
         self.classify()
-        return self.block[index]
+        for n in range(1, len(self.block)+1):
+            blocks.append(self.block[str(n)])
+        return blocks
+
 
     def getTransaction(self, index):
         self.classify()
@@ -58,13 +62,14 @@ class Level2db:
     def close(self):
         self.db.close()
 
+
+
+
 if __name__ == '__main__':
     # block1 = {'d': '1', 'c': '2'}
     # state = Level2db()
     # state.putBlock('1', block1)
     # print(state.getBlock('1'))
     state = Level2db()
-    print(state.get_tran_hash())
-    state.putTransaction('sfdsf', {'djdj': 2, 'dds': 'sdfd'})
-    print(state.get_tran_hash())
+    state.db.delete(b'b2')
     state.close()

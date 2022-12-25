@@ -12,9 +12,11 @@ from level2db import Level2db
 class BlockChain(object):
     """ Main BlockChain class """
     def __init__(self):
-        self.chain = []
+        level2 = Level2db()
+        self.chain = level2.get_all_blocks()
         self.current_transactions = []
         self.nodes = set()
+        level2.close()
 
     def init_genesis(self):
         # find init world state
@@ -23,6 +25,7 @@ class BlockChain(object):
         trie.close()
         # create the genesis block
         self.new_block(previous_hash=1, stateRoot=stateRoot, tranRoot=None, proof=100)
+
 
     @staticmethod
     def hash(block):
@@ -51,7 +54,7 @@ class BlockChain(object):
 
         # store in leveldb
         level2 = Level2db()
-        level2.putBlock(str(len(self.chain)+1), block)
+        level2.putBlock(str(len(self.chain)), block)
         level2.close()
 
         return block
@@ -245,5 +248,7 @@ class BlockChain(object):
 
 if __name__ == '__main__':
     block = BlockChain()
-    block.init_genesis()
+
+    # block.init_genesis()
+    print(block.chain)
 
