@@ -1,15 +1,30 @@
-from ecies.utils import generate_eth_key, generate_key
+# from ecies.utils import generate_eth_key, generate_key, hex2prv
+from coincurve.utils import get_valid_secret
 from ecies import encrypt, decrypt
 import hashlib
+from eth_keys import keys
+
+def generate_sk():
+    return keys.PrivateKey(get_valid_secret())
 
 def getAddress(pk_hex):
     '''Change publickey to blockchain address'''
     return hashlib.sha256(pk_hex.encode()).hexdigest()[24:]
 
+def sk2hex(sk):
+    return sk.to_hex()[2:]
+def hex2sk(sk_hex):
+    return keys.PrivateKey(bytes.fromhex(sk_hex))
+
 if __name__ == '__main__':
-    eth_k = generate_eth_key()
-    sk_hex = eth_k.to_hex()
+    eth_k = generate_sk()
+    print(bytes.fromhex(get_valid_secret().hex()))
+    print(type(eth_k))
+    sk_hex = sk2hex(eth_k)
     print('Privatekey: ', sk_hex)
+    sk = hex2sk(sk_hex)
+    print(type(keys.PrivateKey(bytes.fromhex(sk_hex))))
+
     pk = eth_k.public_key
     pk_hex = pk.to_hex()
     print('Publickey: ', pk_hex)
@@ -25,5 +40,8 @@ if __name__ == '__main__':
     # print(mtext)
     # ptext = decrypt(pk_hex, mtext)
     # print(ptext)
+    sign = sk.sign_msg(data)
 
-    print(getAddress(pk_hex) == getAddress(eth_k.sign_msg(data).recover_public_key_from_msg(data).to_hex()))
+    all = {'sign': sign}
+    print(all)
+    print(getAddress(pk_hex) == getAddress(all['sign'].recover_public_key_from_msg(data).to_hex()))
