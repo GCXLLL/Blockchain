@@ -10,7 +10,7 @@ node_identifier = str(uuid4()).replace('-', '')
 # initiate the Blockchain
 blockchain = BlockChain()
 # set the basecoin
-eth_k = generate_eth_key()
+eth_k = generate_sk()
 pk = eth_k.public_key
 baseCoin = getAddress(pk.to_hex())
 # number of transactions
@@ -30,16 +30,17 @@ def mine():
     last_block = blockchain.last_block
     last_proof = last_block['proof']
     proof = blockchain.proof_of_work(last_proof)
-
+    global nonce_tran
     # we must recieve reward for finding the proof in form of receiving 100 Coin
     blockchain.new_transaction(
         sender=0,
         recipient=baseCoin,
         amount=100,
         data='Mining',
-        nonce=nonce_tran + 1,
+        nonce=nonce_tran,
     )
 
+    nonce_tran = nonce_tran + 1
     '''
         forge the new block by adding it to the chain
     '''
@@ -78,17 +79,23 @@ def mine():
 def new_transaction():
 
     values = request.get_json()
-    required = ['sender', 'recipient', 'amount']
+    required = ['sender', 'recipient', 'amount', 'data', 'sk']
 
     if not all(k in values for k in required):
         return 'Missing values.', 400
 
+    global nonce_tran
     # create a new transaction
     index = blockchain.new_transaction(
         sender = values['sender'],
         recipient = values['recipient'],
-        amount = values['amount']
+        amount = values['amount'],
+        data = values['data'],
+        nonce = nonce_tran,
+        sk = values['sk']
     )
+
+    nonce_tran = nonce_tran + 1
 
     response = {
         'message': f'Transaction will be added to the Block {index}',
@@ -181,3 +188,29 @@ def getBalance():
         return jsonify(res, 200)
     else:
         return jsonify(res, 500)
+
+@app.route('/account/create', methods=['GET'])
+def createAccount():
+    eth_k = generate_sk()
+    pk = eth_k.public_key
+    account = getAddress(pk.to_hex())
+    pk_hex = sk2hex(pk)
+    response = {
+        'Account': account,
+        'PrivateKey': pk_hex
+    }
+
+    # for test only, send 100 to the account
+    global nonce_tran
+    # we must recieve reward for finding the proof in form of receiving 100 Coin
+    blockchain.new_transaction(
+        sender=0,
+        recipient=account,
+        amount=100,
+        data='Creating',
+        nonce=nonce_tran,
+    )
+
+    nonce_tran = nonce_tran + 1
+
+    return jsonify(response, 200)
