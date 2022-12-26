@@ -74,6 +74,11 @@ class BlockChain(object):
             'nonce': nonce
         }
         hash = self.hash(baseTran)
+        # identify the sender
+        if sender == 0:
+            sign = None
+        else:
+            sign = sk.sign_msg(hash.encode())
         # adds a new transaction into the list of transactions
         # these transactions go into the next mined block
         self.current_transactions.append({
@@ -82,7 +87,7 @@ class BlockChain(object):
             'value': amount,
             'data': data,
             'hash': hash,
-            'sign': sk.sign_msg(hash.encode())
+            'sign': sign
         })
         return int(self.last_block['index'])+1
 
@@ -150,8 +155,6 @@ class BlockChain(object):
 
         # grab and verify chains from all the nodes in our network
         for node in neighbours:
-            print('in loop')
-            print(f'http://{node}/chain_request')
             # we utilize our own api to construct the list of chains :)
             response = requests.get(f'http://{node}/chain_request')
 
