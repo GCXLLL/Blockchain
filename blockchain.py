@@ -34,22 +34,26 @@ class BlockChain(object):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
-    def new_block(self, proof, tranRoot, stateRoot, previous_hash=None):
+    def new_block(self, proof, tranRoot, stateRoot, previous_hash=None, timestamp=None, tran=None):
 
         rxRoot = tranRoot # not consider tranRoot currently
         # creates a new block in the blockchain
         block = {
             'index': len(self.chain)+1,
-            'timestamp': time(),
-            'transactions': self.current_transactions,
+            'timestamp': timestamp or time(),
+            'transactions': tran or self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
             'receiptsRoot': rxRoot,
             'transactionRoot': tranRoot,
             'stateRoot': stateRoot
         }
-        # reset the current list of transactions
-        self.current_transactions = []
+        # check if received block
+        if tran is None:
+            # local generate block
+            # reset the current list of transactions
+            self.current_transactions = []
+        # add to memory
         self.chain.append(block)
 
         # store in leveldb
@@ -246,7 +250,8 @@ class BlockChain(object):
         # get the present state root and transaction root
         stateRoot = trie.root().hex()
         transactionRoot = level2.get_tran_hash()
-
+        trie.close()
+        level2.close()
         return stateRoot, transactionRoot, True
 
     def get_transaction(self, tranHash):
@@ -293,11 +298,110 @@ class BlockChain(object):
         state.close()
         return balance, flag
 
+    def valid_come_block(self, block):
+        '''
+        check the received block
 
+        :param
+        block: dict
+        :return:
+        message: str
+        flag: bool
+        '''
+        last_block = self.last_block()
+
+        # check the index
+        if block['index'] != len(self.chain)+1:
+            return 'Wrong Index', False
+
+        # check previous hash
+        if block['previous_hash'] != self.hash(self.chain[-1]):
+            return 'Wrong Previous_hash', False
+
+        # check pow
+        if not self.validate_proof(last_block['proof'], block['proof']):
+            return 'Wrong Proof of Work', False
+
+        # find the last world state
+
+        last_stateRoot = last_block['stateRoot']
+        root = binascii.unhexlify(last_stateRoot)
+        # get the world state MPT
+        trie = Level1db(root=root)
+        # connect to level2db
+        level2 = Level2db()
+
+        # check transactions and world state
+        for tran in block['transactions']:
+            sender = tran['sender']
+            recipient = tran['recipient']
+            value = tran['value']
+            tran_hash = tran['hash']
+            if sender != 0:
+                # not the reward for miner
+                if not tran['sender'] == \
+                       getAddress(tran['sign'].recover_public_key_from_msg(tran['hash'].encode()).to_hex()):
+                    # check the signature
+                    trie.close()
+                    level2.close()
+                    return 'Wrong Transaction: Wrong signature', False
+                try:
+                    balance_sender = int(trie.get(sender.encode()).decode())
+                except:
+                    # sender not exist
+                    trie.close()
+                    level2.close()
+                    return 'Wrong Transaction: Sender not exist', False
+                if value <= balance_sender:
+                    balance_sender = balance_sender - value
+                else:
+                    # no enough balance
+                    trie.close()
+                    level2.close()
+                    return 'Wrong Transaction: No enough balance', False
+
+            # update the balance of sender
+            trie.update(sender.encode(), str(balance_sender).encode())
+            try:
+                balance_recipient = int(trie.get(recipient.encode()).decode())
+                balance_recipient = balance_recipient + value
+            except:
+                balance_recipient = value
+            # update the balance of recipient
+            trie.update(recipient.encode(), str(balance_recipient).encode())
+
+            # put transactions in level2db
+            level2.putTransaction(tran_hash, tran)
+
+        # get the present state root and transaction root
+        stateRoot = trie.root().hex()
+        transactionRoot = level2.get_tran_hash()
+        trie.close()
+        level2.close()
+
+        # check the state root and transaction root
+        if stateRoot != block[stateRoot]:
+            return 'Wrong State Root', False
+
+        if transactionRoot != block['transactionRoot']:
+            return 'Wrong Transaction Root', False
+
+        return 'Valid Block', True
 
 if __name__ == '__main__':
-    block = BlockChain()
-
-    # block.init_genesis()
-    print(block.chain)
+    level = Level1db()
+    level.update(b'ok', b'ok')
+    root = level.root()
+    print(level.root())
+    level.close()
+    level2 = Level1db(bytes.fromhex(root.hex()))
+    level2.update(b'ok', b'hi')
+    print(level2.root())
+    level2.close()
+    level3 = Level1db(bytes.fromhex(root.hex()))
+    print(level3.get(b'ok'))
+    level3.close()
+    level4 = Level1db(binascii.unhexlify(level2.root().hex()))
+    print(level4.get(b'ok'))
+    level3.close()
 

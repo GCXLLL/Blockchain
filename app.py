@@ -168,6 +168,25 @@ def consensus():
     }
     return jsonify(response), 200
 
+@app.route('/nodes/receiveBlock', methods=['POST'])
+def come_block():
+    block = request.get_json()
+
+    # check the block
+    msg, flag = blockchain.valid_come_block(block)
+    if flag:
+        # add block to local
+        blockchain.new_block(
+            proof=block['proof'],
+            tranRoot=block['transactionRoot'],
+            stateRoot=block['stateRoot'],
+            previous_hash=block['previous_hash'],
+            timestamp=block['timestamp'],
+            tran=block['transactions']
+        )
+        return jsonify(msg + ': Succeed to add'), 200
+    else:
+        return jsonify('Invalid Block: ' + msg), 500
 
 @app.route('/account/changeBasecoin', methods=['GET'])
 def changeBasecoin():
