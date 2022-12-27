@@ -18,10 +18,11 @@ class BlockChain(object):
         self.nodes = set()
         level2.close()
 
-    def init_genesis(self):
+    def init_genesis(self, account):
         # find init world state
         trie = Level1db()
-        stateRoot = trie.root_hash().hex()
+        trie.update(account.encode(), b'100')
+        stateRoot = trie.root().hex()
         trie.close()
         # create the genesis block
         self.new_block(previous_hash=1, stateRoot=stateRoot, proof=100)
@@ -235,8 +236,9 @@ class BlockChain(object):
         flag: bool
         '''
         # find the last world state
-        last_block = self.last_block()
+        last_block = self.last_block
         last_stateRoot = last_block['stateRoot']
+        print(last_stateRoot)
         root = binascii.unhexlify(last_stateRoot)
         # get the world state MPT
         trie = Level1db(root=root)
@@ -260,7 +262,12 @@ class BlockChain(object):
                     # no enough balance
                     trie.close()
                     return '', False
+            else:
+                sender = str(sender)
+                balance_sender = 0
             # update the balance of sender
+            print(sender.encode())
+            print(str(balance_sender).encode())
             trie.update(sender.encode(), str(balance_sender).encode())
             try:
                 balance_recipient = int(trie.get(recipient.encode()).decode())
@@ -305,7 +312,7 @@ class BlockChain(object):
         flag: bool
         '''
         # find the last world state
-        last_block = self.last_block()
+        last_block = self.last_block
         last_stateRoot = last_block['stateRoot']
         root = binascii.unhexlify(last_stateRoot)
         # get the world state MPT
@@ -329,7 +336,7 @@ class BlockChain(object):
         message: str
         flag: bool
         '''
-        last_block = self.last_block()
+        last_block = self.last_block
 
         # check the index
         if block['index'] != len(self.chain)+1:
@@ -380,7 +387,9 @@ class BlockChain(object):
                     trie.close()
                     level2.close()
                     return 'Wrong Transaction: No enough balance', False
-
+            else:
+                sender = str(sender)
+                balance_sender = 0
             # update the balance of sender
             trie.update(sender.encode(), str(balance_sender).encode())
             try:
@@ -414,8 +423,8 @@ class BlockChain(object):
             response = requests.post(f'http://{node}/nodes/receiveBlock', json=block)
 
 
-if __name__ == '__main__':
-    node = '127.0.0.1:5000'
-    block = {'1': 'hi', '2': 'ok'}
-    response = requests.get(f'http://{node}/test', json=block)
+# if __name__ == '__main__':
+#     chain = BlockChain()
+#     chain.init_genesis()
+
 

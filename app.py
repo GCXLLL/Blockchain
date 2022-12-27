@@ -2,6 +2,7 @@ from uuid import uuid4
 from flask import Flask, jsonify, request
 from blockchain import*
 from ecc import*
+from utils import*
 
 # initiate the node
 app = Flask(__name__)
@@ -15,6 +16,12 @@ pk = eth_k.public_key
 baseCoin = getAddress(pk.to_hex())
 # number of transactions
 nonce_tran = 0
+
+@app.route('/init', methods=['GET'])
+def init():
+    blockchain.init_genesis(baseCoin)
+    response = 'Succeed to init the blockchain'
+    return jsonify(response, 200)
 
 @app.route('/mine', methods=['GET'])
 def mine():
@@ -75,7 +82,7 @@ def mine():
     }
     return jsonify(response, 200)
 
-@app.route('/transaction/new', methods=['GET'])
+@app.route('/transaction/new', methods=['POST'])
 def new_transaction():
 
     values = request.get_json()
@@ -102,7 +109,7 @@ def new_transaction():
     }
     return jsonify(response, 200)
 
-@app.route('/transaction/find', methods=['GET'])
+@app.route('/transaction/find', methods=['POST'])
 def find_transaction():
     values = request.get_json()
     res, flag = blockchain.get_transaction(values['hash'])
@@ -166,7 +173,7 @@ def consensus():
     }
     return jsonify(response), 200
 
-@app.route('/nodes/receiveBlock', methods=['GET'])
+@app.route('/nodes/receiveBlock', methods=['POST'])
 def come_block():
     block = request.get_json()
 
@@ -185,18 +192,24 @@ def come_block():
     else:
         return jsonify('Invalid Block: ' + msg), 500
 
-@app.route('/account/changeBasecoin', methods=['GET'])
+@app.route('/account/changeBasecoin', methods=['POST'])
 def changeBasecoin():
     values = request.get_json()
     global baseCoin
-    baseCoin = values.get('baseCoin')
+
+    newbase = values.get('baseCoin')
+    if validate_account(newbase):
+        baseCoin = newbase
+    else:
+        return jsonify('Wrong Account', 200)
 
     response = {
         'Basecoin': baseCoin
     }
     return jsonify(response, 200)
 
-@app.route('/account/getBalance', methods=['GET'])
+
+@app.route('/account/getBalance', methods=['POST'])
 def getBalance():
     values = request.get_json()
     res, flag = blockchain.get_balance(values['account'])
@@ -204,6 +217,7 @@ def getBalance():
         return jsonify(res, 200)
     else:
         return jsonify(res, 500)
+
 
 @app.route('/account/create', methods=['GET'])
 def createAccount():

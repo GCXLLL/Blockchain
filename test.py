@@ -1,59 +1,34 @@
 from level1db import Level1db
 import binascii
-# from mpt import MerklePatriciaTrie
-# storage = {b'w\x9d\xb3\x98m\xd4\xf3\x84\x16\xbf\xdeIu\x0e\xf7\xb1<n\xcb>"!b\x0b\xca\xd9&~\x94`M6': b'\xe1\x83\x00do\xdc\x80\x80\x80\x80\x80\x80\xc77\x85puppy\x80\x80\x80\x80\x80\x80\x80\x80\x80\x84verb', b'\xd4;\x87\xfd\xcdB\x17\x01<\xcc\x92\xd0Fb\xe1-6\xe4\xcc%\xdci\x00w\xcd\x82\x1a\x19V\xfc>6': b'\xf3\x80\x80\x80\x80\x80\x80\xde\x17\xdc\x80\x80\x80\x80\x80\x80\xc65\x84coin\x80\x80\x80\x80\x80\x80\x80\x80\x80\x85puppy\x80\x80\x80\x80\x80\x80\x80\x80\x80\x84verb', b'\xef{/\xe2\x0f],0\xc4j\xd4\xd8<9\x81\x1b\xcb\xf1r\x1a\xef.\x80\\\x0e\x10yG2\x08\x88\xb6': b'\xe5\x83\x00do\xa0\xd4;\x87\xfd\xcdB\x17\x01<\xcc\x92\xd0Fb\xe1-6\xe4\xcc%\xdci\x00w\xcd\x82\x1a\x19V\xfc>6', b'\x94\xa9\xf9[\xd8\x96\x98\xe4\xda\x18\x12\xe0Q\x80S\x81;M[\x87\xca\xafk<o\xa5~\x9eP\xc0\xffh': b'\xe4\x82\x00o\xa0\xd4;\x87\xfd\xcdB\x17\x01<\xcc\x92\xd0Fb\xe1-6\xe4\xcc%\xdci\x00w\xcd\x82\x1a\x19V\xfc>6', b'\xbd>\xe5\x07\xe6\xc6|\xfe\xfc\xa9\x8f\x84\xbeG\xc1\xbb\xc0\t1_\xab\xc4@]\xb4\xba2\x19\x03tW*': b'\xf8@\x80\x80\x80\x80\xa0\x94\xa9\xf9[\xd8\x96\x98\xe4\xda\x18\x12\xe0Q\x80S\x81;M[\x87\xca\xafk<o\xa5~\x9eP\xc0\xffh\x80\x80\x80\xcf\x85 orse\x88stallion\x80\x80\x80\x80\x80\x80\x80\x80', b'Y\x91\xbb\x8ce\x14\x14\x8a)\xdbgj\x14\xacPl\xd2\xcdWu\xac\xe6<0\xa4\xfeEw\x15\xe9\xac\x84': b'\xe2\x16\xa0\xbd>\xe5\x07\xe6\xc6|\xfe\xfc\xa9\x8f\x84\xbeG\xc1\xbb\xc0\t1_\xab\xc4@]\xb4\xba2\x19\x03tW*'}
-# storage = {}
-# trie = MerklePatriciaTrie(storage)
-# trie = Level1db()
-# #
-# trie.update(b'do', b'verb')
-# trie.update(b'dog', b'puppy')
-# trie.update(b'doge', b'coin')
+
+from mpt import MerklePatriciaTrie
+# old_trie = Level1db()
+# for n in range(100):
+#     value = f'df{n}'
+#     old_trie.update(value.encode(), b'ddd')
 #
-# trie.update(b'horse', b'stallion')
-#
+# print(old_trie.root().hex())
+# root = old_trie.root()
+
+root = binascii.unhexlify('1f877b48a1e60d54a41747e5c674a6ced40353480c5ad3fcbee94f8ea3322fac')
+print(root)
+# root = binascii.unhexlify('ca83206464856464646664')
+# print(root)
+trie = Level1db(root=root)
+
+for n in range(10):
+    value = f'df{n}'
+    print(trie.get(value.encode()))
+# sender = str(0)
+# trie.update(b'dd', b'dddfd')
+# print(trie.root().hex())
+
+
 # old_root = trie.root()
 # old_root_hash = trie.root_hash()
 #
 # print("Root is {}".format(old_root))
-# print("Root hash is {}".format(old_root_hash))
-#
-# print(storage)
+# print("Root hash is {}".format(old_root_hash.hex()))
 
-# trie.delete(b'doge')
 
-# print(storage)
 
-# trie.update(b'doge', b'coin1')
-
-# print(storage)
-
-# print("New root hash is {}".format(trie.root_hash().hex()))
-#
-# trie_from_old_hash = MerklePatriciaTrie(storage
-#                                          , root=b'Y\x91\xbb\x8ce\x14\x14\x8a)\xdbgj\x14\xacPl\xd2\xcdWu\xac\xe6<0\xa4\xfeEw\x15\xe9\xac\x84')
-#
-# print(trie_from_old_hash.get(b'do'))
-
-# try:
-#     print(trie.get(b'do'))
-# except KeyError:
-#     print('Not accessible in a new trie.')
-print(b'Y\x91\xbb\x8ce\x14\x14\x8a)\xdbgj\x14\xacPl\xd2\xcdWu\xac\xe6<0\xa4\xfeEw\x15\xe9\xac\x84'.hex())
-root = binascii.unhexlify('882cfe4d8d671c467c5eeeb7f00c1952122e808dbee0b91eda1bc0547811293c')
-print(root)
-trie_from_old_hash = Level1db(
-            root=root)
-
-print(trie_from_old_hash.get(b'do'))
-
-trie_from_old_hash.update(b'do', b'verb1')
-
-new_root = trie_from_old_hash.root()
-
-print("Root is {}".format(new_root.hex()))
-
-try:
-    print(trie_from_old_hash.get(b'do1'))
-except:
-    print('Not accessible in a new trie.')
