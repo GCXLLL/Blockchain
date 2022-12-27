@@ -18,8 +18,6 @@ nonce_tran = 0
 
 @app.route('/mine', methods=['GET'])
 def mine():
-    # Ensure nodes are synchronized
-    blockchain.resolve_conflicts()
 
     '''
         Apply consensus algorithm to choose the miner
@@ -113,7 +111,6 @@ def find_transaction():
 
 @app.route('/chain', methods=['GET'])
 def full_chain():
-    blockchain.resolve_conflicts()
     response = {
         'chain': blockchain.chain,
         'length': len(blockchain.chain),
@@ -152,10 +149,9 @@ def register_nodes():
 @app.route('/nodes/resolve', methods=['POST'])
 def consensus():
     # an attempt to resolve conflicts to reach the consensus
-    print('begin to solve conflict')
     conflicts = blockchain.resolve_conflicts()
 
-    if (conflicts):
+    if conflicts:
         response = {
             'message': 'Our chain was replaced.',
             'new_chain': blockchain.chain,

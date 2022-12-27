@@ -149,13 +149,11 @@ class BlockChain(object):
     def resolve_conflicts(self):
         # this is our Consensus Algorithm, it resolves conflicts by replacing
         # our chain with the longest one in the network.
-
+        addChain = None
         neighbours = self.nodes
-        new_chain = None
 
         # we are only looking for the chains longer than ours
-        max_length = len(self.chain)
-        print('length of this chain', max_length)
+        current_length = len(self.chain)
 
         # grab and verify chains from all the nodes in our network
         for node in neighbours:
@@ -168,15 +166,36 @@ class BlockChain(object):
                 chain = response.json()['chain']
 
                 # check if the chain is longer and whether the chain is valid
-                if length > max_length and self.valid_chain(chain):
-                    max_length = length
-                    new_chain = chain
+                if length > current_length and self.valid_chain(chain):
+                    newChain = []
+                    # check the block
+                    for n in range(current_length, length + 1):
+                        block = chain[n]
+                        msg, flag = self.valid_come_block(block)
+                        if flag:
+                            newChain.append(block)
+                        else:
+                            newChain = None
+                            break
+                    # if valid, add blocks to addChain and change current_length
+                    if newChain:
+                        current_length = length
+                        addChain = list(newChain)  # change address of list
 
-        # replace our chain if we discover a new longer valid chain
-        if new_chain:
-            self.chain = new_chain
+        # add new blocks in our chain if we discover a new longer valid chain
+        if addChain:
+            for block in addChain:
+                # add block to local
+                self.new_block(
+                    proof=block['proof'],
+                    tranRoot=block['transactionRoot'],
+                    stateRoot=block['stateRoot'],
+                    previous_hash=block['previous_hash'],
+                    timestamp=block['timestamp'],
+                    tran=block['transactions']
+                )
             return True
-
+        # Our chain is the longest
         return False
 
     def valid_transaction(self):
