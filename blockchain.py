@@ -24,7 +24,7 @@ class BlockChain(object):
         stateRoot = trie.root_hash().hex()
         trie.close()
         # create the genesis block
-        self.new_block(previous_hash=1, stateRoot=stateRoot, tranRoot=None, proof=100)
+        self.new_block(previous_hash=1, stateRoot=stateRoot, proof=100)
 
 
     @staticmethod
@@ -34,30 +34,45 @@ class BlockChain(object):
         block_string = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
-    def new_block(self, proof, tranRoot, stateRoot, previous_hash=None, timestamp=None, tran=None):
+    def new_block(self, proof, stateRoot, previous_hash=None, timestamp=None, trans=None):
+        if trans is None:
+            transaction = self.current_transactions
+        else:
+            transaction = trans
 
-        rxRoot = tranRoot # not consider tranRoot currently
+        # put transactions in level2db
+        level2 = Level2db()
+        for tran in transaction:
+            tran_hash = tran['hash']
+            level2.putTransaction(tran_hash, tran)
+
+        # get transaction root
+        tranRoot = level2.get_tran_hash()
+
+        rxRoot = tranRoot  # not consider tranRoot currently
+
         # creates a new block in the blockchain
         block = {
             'index': len(self.chain)+1,
             'timestamp': timestamp or time(),
-            'transactions': tran or self.current_transactions,
+            'transactions': trans or self.current_transactions,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
             'receiptsRoot': rxRoot,
             'transactionRoot': tranRoot,
             'stateRoot': stateRoot
         }
+
         # check if received block
-        if tran is None:
+        if trans is None:
             # local generate block
             # reset the current list of transactions
             self.current_transactions = []
+
         # add to memory
         self.chain.append(block)
 
         # store in leveldb
-        level2 = Level2db()
         level2.putBlock(str(len(self.chain)), block)
         level2.close()
 
@@ -188,7 +203,6 @@ class BlockChain(object):
                 # add block to local
                 self.new_block(
                     proof=block['proof'],
-                    tranRoot=block['transactionRoot'],
                     stateRoot=block['stateRoot'],
                     previous_hash=block['previous_hash'],
                     timestamp=block['timestamp'],
@@ -214,12 +228,10 @@ class BlockChain(object):
     def work_before_mine(self):
         '''
         change the world state by transactions
-        store valid transactions into leveldb
         get state root
         get transaction root
         :return:
         state root: str
-        transaction root: str
         flag: bool
         '''
         # find the last world state
@@ -228,14 +240,11 @@ class BlockChain(object):
         root = binascii.unhexlify(last_stateRoot)
         # get the world state MPT
         trie = Level1db(root=root)
-        # connect to level2db
-        level2 = Level2db()
         # update world state by transactions
         for tran in self.current_transactions:
             sender = tran['sender']
             recipient = tran['recipient']
             value = tran['value']
-            tran_hash = tran['hash']
             # check sender
             if sender != 0:
                 # not the reward for miner
@@ -244,15 +253,13 @@ class BlockChain(object):
                 except:
                     # sender not exist
                     trie.close()
-                    level2.close()
-                    return '', '', False
+                    return '', False
                 if value <= balance_sender:
                     balance_sender = balance_sender - value
                 else:
                     # no enough balance
                     trie.close()
-                    level2.close()
-                    return '', '', False
+                    return '', False
             # update the balance of sender
             trie.update(sender.encode(), str(balance_sender).encode())
             try:
@@ -263,15 +270,10 @@ class BlockChain(object):
             # update the balance of recipient
             trie.update(recipient.encode(), str(balance_recipient).encode())
 
-            # put transactions in level2db
-            level2.putTransaction(tran_hash, tran)
-
         # get the present state root and transaction root
         stateRoot = trie.root().hex()
-        transactionRoot = level2.get_tran_hash()
         trie.close()
-        level2.close()
-        return stateRoot, transactionRoot, True
+        return stateRoot, True
 
     def get_transaction(self, tranHash):
         '''
@@ -388,9 +390,8 @@ class BlockChain(object):
                 balance_recipient = value
             # update the balance of recipient
             trie.update(recipient.encode(), str(balance_recipient).encode())
-
-            # put transactions in level2db
-            level2.putTransaction(tran_hash, tran)
+            # add Tx to transaction trie
+            level2.putTx2trie(tran_hash, tran)
 
         # get the present state root and transaction root
         stateRoot = trie.root().hex()

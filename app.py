@@ -50,14 +50,13 @@ def mine():
         return jsonify('There is invalid transaction', 500)
 
     # finish the work before mining
-    stateRoot, transactionRoot, flag = blockchain.work_before_mine()
+    stateRoot,  flag = blockchain.work_before_mine()
     if not flag:
         return jsonify('No enough balance', 500)
 
     # generate new block
     block = blockchain.new_block(
         proof=proof,
-        tranRoot=transactionRoot,
         stateRoot=stateRoot,
         previous_hash=previous_hash)
 
@@ -174,7 +173,6 @@ def come_block():
         # add block to local
         blockchain.new_block(
             proof=block['proof'],
-            tranRoot=block['transactionRoot'],
             stateRoot=block['stateRoot'],
             previous_hash=block['previous_hash'],
             timestamp=block['timestamp'],

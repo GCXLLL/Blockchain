@@ -44,8 +44,10 @@ class Level2db:
         self.db.put(b'b'+index.encode(), rlp.encode(json.dumps(content)))
 
     def putTransaction(self, index: str, content):
-        self.trie.update(index.encode(), rlp.encode(json.dumps(content)))
         self.db.put(b't'+index.encode(), rlp.encode(json.dumps(content)))
+
+    def putTx2trie(self, index: str, content):
+        self.trie.update(index.encode(), rlp.encode(json.dumps(content)))
 
     def putReceipt(self, index: str, content):
         self.db.put(b'r'+index.encode(), rlp.encode(json.dumps(content)))
