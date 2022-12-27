@@ -60,6 +60,9 @@ def mine():
         stateRoot=stateRoot,
         previous_hash=previous_hash)
 
+    # broadcast the new block
+    blockchain.broadcast_block(block)
+
     response = {
         'message': "Forged new block.",
         'index': block['index'],
@@ -163,7 +166,7 @@ def consensus():
     }
     return jsonify(response), 200
 
-@app.route('/nodes/receiveBlock', methods=['POST'])
+@app.route('/nodes/receiveBlock', methods=['GET'])
 def come_block():
     block = request.get_json()
 
@@ -227,3 +230,4 @@ def createAccount():
     nonce_tran = nonce_tran + 1
 
     return jsonify(response, 200)
+

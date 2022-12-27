@@ -408,20 +408,14 @@ class BlockChain(object):
 
         return 'Valid Block', True
 
+    def broadcast_block(self, block):
+        neighbours = self.nodes
+        for node in neighbours:
+            response = requests.post(f'http://{node}/nodes/receiveBlock', json=block)
+
+
 if __name__ == '__main__':
-    level = Level1db()
-    level.update(b'ok', b'ok')
-    root = level.root()
-    print(level.root())
-    level.close()
-    level2 = Level1db(bytes.fromhex(root.hex()))
-    level2.update(b'ok', b'hi')
-    print(level2.root())
-    level2.close()
-    level3 = Level1db(bytes.fromhex(root.hex()))
-    print(level3.get(b'ok'))
-    level3.close()
-    level4 = Level1db(binascii.unhexlify(level2.root().hex()))
-    print(level4.get(b'ok'))
-    level3.close()
+    node = '127.0.0.1:5000'
+    block = {'1': 'hi', '2': 'ok'}
+    response = requests.get(f'http://{node}/test', json=block)
 
