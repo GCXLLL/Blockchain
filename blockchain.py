@@ -15,7 +15,7 @@ class BlockChain(object):
         level2 = Level2db()
         self.chain = level2.get_all_blocks()
         self.current_transactions = []
-        self.nodes = set()
+        self._nodes = set()
         level2.close()
 
     def init_genesis(self, account):
@@ -83,6 +83,12 @@ class BlockChain(object):
     def last_block(self):
         # returns last block in the chain
         return self.chain[-1]
+
+    @property
+    def nodes(self):
+        # listen the change of the nodes
+        print('hello world')
+        return self._nodes
 
     def new_transaction(self, sender, recipient, amount, data, nonce, sk=None):
         # get hash value of transaction
@@ -425,6 +431,7 @@ class BlockChain(object):
 
 # if __name__ == '__main__':
 #     chain = BlockChain()
-#     chain.init_genesis()
+#     chain.nodes.add('0.0.0.0:5000')
+#     print(chain.nodes)
 
 

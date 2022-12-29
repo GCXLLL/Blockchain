@@ -1,5 +1,7 @@
 from uuid import uuid4
-from flask import Flask, jsonify, request
+
+import flask
+from flask import Flask, jsonify, request, Response
 from blockchain import*
 from ecc import*
 from utils import*
@@ -232,7 +234,7 @@ def createAccount():
 
     # for test only, send 100 to the account
     global nonce_tran
-    # we must recieve reward for finding the proof in form of receiving 100 Coin
+    # we must receive reward for finding the proof in form of receiving 100 Coin
     blockchain.new_transaction(
         sender=0,
         recipient=account,
