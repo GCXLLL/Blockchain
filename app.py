@@ -12,15 +12,22 @@ app = Flask(__name__)
 node_identifier = str(uuid4()).replace('-', '')
 # initiate the Blockchain
 blockchain = BlockChain()
-# set the basecoin
-eth_k = generate_sk()
-pk = eth_k.public_key
-baseCoin = getAddress(pk.to_hex())
+
 # number of transactions
 nonce_tran = 0
 
+# base coin
+baseCoin = get_basecoin()
+
 @app.route('/init', methods=['GET'])
 def init():
+    # set the basecoin
+    global baseCoin
+    eth_k = generate_sk()
+    pk = eth_k.public_key
+    baseCoin = getAddress(pk.to_hex())
+    store_basecoin(baseCoin)
+    # create the genesis block
     blockchain.init_genesis(baseCoin)
     response = 'Succeed to init the blockchain'
     return jsonify(response, 200)
@@ -202,11 +209,12 @@ def changeBasecoin():
     newbase = values.get('baseCoin')
     if validate_account(newbase):
         baseCoin = newbase
+        store_basecoin(baseCoin)
     else:
         return jsonify('Wrong Account', 200)
 
     response = {
-        'Basecoin': baseCoin
+        'BaseCoin': baseCoin
     }
     return jsonify(response, 200)
 

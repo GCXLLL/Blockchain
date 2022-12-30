@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 from ecc import*
 from level1db import Level1db
 from level2db import Level2db
+from utils import get_basecoin
 
 
 class BlockChain(object):
@@ -15,7 +16,11 @@ class BlockChain(object):
         level2 = Level2db()
         self.chain = level2.get_all_blocks()
         self.current_transactions = []
-        self._nodes = set()
+        self.nodes = set()
+        # read the storage
+        with open("data/nodes.txt", "r") as f:
+            for line in f.readlines():
+                self.nodes.add(line.strip('\n'))
         level2.close()
 
     def init_genesis(self, account):
@@ -84,11 +89,11 @@ class BlockChain(object):
         # returns last block in the chain
         return self.chain[-1]
 
-    @property
-    def nodes(self):
+    def store_nodes(self):
         # listen the change of the nodes
-        print('hello world')
-        return self._nodes
+        with open("data/nodes.txt", "a") as f:
+            for node in self.nodes:
+                f.write(node + '\n')
 
     def new_transaction(self, sender, recipient, amount, data, nonce, sk=None):
         # get hash value of transaction
@@ -137,6 +142,7 @@ class BlockChain(object):
         # add a new node to the list of nodes
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
+        self.store_nodes()
 
     def full_chain(self):
         # xxx returns the full chain and a number of blocks
@@ -146,6 +152,7 @@ class BlockChain(object):
         # add on the new miner node onto the list of nodes
         parsed_url = urlparse(address)
         self.nodes.add(parsed_url.netloc)
+        self.store_nodes()
         return
 
     def valid_chain(self, chain):
@@ -429,9 +436,7 @@ class BlockChain(object):
             response = requests.post(f'http://{node}/nodes/receiveBlock', json=block)
 
 
-# if __name__ == '__main__':
-#     chain = BlockChain()
-#     chain.nodes.add('0.0.0.0:5000')
-#     print(chain.nodes)
+if __name__ == '__main__':
+    print(get_basecoin())
 
 
