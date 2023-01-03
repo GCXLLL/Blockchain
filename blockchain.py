@@ -106,14 +106,14 @@ class BlockChain(object):
             'recipient': recipient,
             'value': amount,
             'data': data,
-            'nonce': nonce
+            'nonce': nonce # avoid hash conflict
         }
         hash = self.hash(baseTran)
         # identify the sender
         if sender == 0:
             sign = None
         else:
-            sign = hex2sk(sk).sign_msg(hash.encode())
+            sign = sign2hex(hex2sk(sk).sign_msg(hash.encode()))
         # adds a new transaction into the list of transactions
         # these transactions go into the next mined block
         self.current_transactions.append({
@@ -124,7 +124,7 @@ class BlockChain(object):
             'hash': hash,
             'sign': sign
         })
-        return int(self.last_block['index'])+1
+        return int(self.last_block['index'])+1, hash
 
     def proof_of_work(self, last_proof):
         # simple proof of work algorithm
@@ -235,7 +235,8 @@ class BlockChain(object):
             if tran['sender'] == 0:
                 # reward for miner
                 pass
-            elif tran['sender'] == getAddress(tran['sign'].recover_public_key_from_msg(tran['hash'].encode()).to_hex()):
+            elif tran['sender'] == \
+                    getAddress(hex2sign(tran['sign']).recover_public_key_from_msg(tran['hash'].encode()).to_hex()):
                 # verify the signature
                 pass
             else:
@@ -385,7 +386,7 @@ class BlockChain(object):
             if sender != 0:
                 # not the reward for miner
                 if not tran['sender'] == \
-                       getAddress(tran['sign'].recover_public_key_from_msg(tran['hash'].encode()).to_hex()):
+                       getAddress(hex2sign(tran['sign']).recover_public_key_from_msg(tran['hash'].encode()).to_hex()):
                     # check the signature
                     trie.close()
                     level2.close()

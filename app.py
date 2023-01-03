@@ -109,7 +109,7 @@ def new_transaction():
 
     global nonce_tran
     # create a new transaction
-    index = blockchain.new_transaction(
+    index, hash = blockchain.new_transaction(
         sender = values['sender'],
         recipient = values['recipient'],
         amount = values['amount'],
@@ -122,6 +122,7 @@ def new_transaction():
 
     response = {
         'message': f'Transaction will be added to the Block {index}',
+        'transaction hash': hash
     }
     return jsonify(response, 200)
 
