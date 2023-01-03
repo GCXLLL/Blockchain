@@ -1,6 +1,6 @@
 from uuid import uuid4
+import os
 
-import flask
 from flask import Flask, jsonify, request, Response
 from blockchain import*
 from ecc import*
@@ -10,6 +10,13 @@ from utils import*
 app = Flask(__name__)
 # generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
+
+# make data dir
+try:
+    os.mkdir('./data')
+except:
+    pass
+
 # initiate the Blockchain
 blockchain = BlockChain()
 

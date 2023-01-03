@@ -29,7 +29,7 @@ class Level1db:
             An instance of MPT.
         """
 
-        self._storage = plyvel.DB('./testdb', create_if_missing=True)
+        self._storage = plyvel.DB('./data/level1', create_if_missing=True)
         self._root = root
         self._secure = secure
     def close(self):

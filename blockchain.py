@@ -18,9 +18,13 @@ class BlockChain(object):
         self.current_transactions = []
         self.nodes = set()
         # read the storage
-        with open("data/nodes.txt", "r") as f:
-            for line in f.readlines():
-                self.nodes.add(line.strip('\n'))
+        try:
+            with open("data/nodes.txt", "r") as f:
+                for line in f.readlines():
+                    self.nodes.add(line.strip('\n'))
+        except:
+            # if not exist, pass
+            pass
         level2.close()
 
     def init_genesis(self, account):

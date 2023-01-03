@@ -5,7 +5,7 @@ import json
 
 class Level2db:
     def __init__(self):
-        self.db = plyvel.DB('./test2db', create_if_missing=True)
+        self.db = plyvel.DB('./data/level2', create_if_missing=True)
         self.transaction = {}
         self.block = {}
         self.receipt = {}
