@@ -109,7 +109,7 @@ class BlockChain(object):
         if sender == 0:
             sign = None
         else:
-            sign = sk.sign_msg(hash.encode())
+            sign = hex2sk(sk).sign_msg(hash.encode())
         # adds a new transaction into the list of transactions
         # these transactions go into the next mined block
         self.current_transactions.append({
@@ -438,5 +438,6 @@ class BlockChain(object):
 
 if __name__ == '__main__':
     print(get_basecoin())
+
 
 

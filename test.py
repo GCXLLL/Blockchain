@@ -37,3 +37,4 @@ def create_file(string):
 
 with open("test/node1/data/baseCoin.txt", "r") as f:
     print(f.read())
+

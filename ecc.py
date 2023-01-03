@@ -23,25 +23,25 @@ if __name__ == '__main__':
     sk_hex = sk2hex(eth_k)
     print('Privatekey: ', sk_hex)
     sk = hex2sk(sk_hex)
-    print(type(keys.PrivateKey(bytes.fromhex(sk_hex))))
+    print(type(sk))
 
-    pk = eth_k.public_key
-    pk_hex = pk.to_hex()
-    print('Publickey: ', pk_hex)
-
-    '''Sign and verify'''
-    data = b'this is a test'
-    data1 = b'this is a test'
-    print(eth_k.sign_msg(data).recover_public_key_from_msg(data))
-    # print(eth_k.sign_msg(data).verify_msg(data1, eth_k.public_key))
-
-    '''Encryption'''
-    # mtext = encrypt(sk_hex, data)
-    # print(mtext)
-    # ptext = decrypt(pk_hex, mtext)
-    # print(ptext)
-    sign = sk.sign_msg(data)
-
-    all = {'sign': sign}
-    print(all)
-    print(getAddress(pk_hex) == getAddress(all['sign'].recover_public_key_from_msg(data).to_hex()))
+    # pk = eth_k.public_key
+    # pk_hex = pk.to_hex()
+    # print('Publickey: ', pk_hex)
+    #
+    # '''Sign and verify'''
+    # data = b'this is a test'
+    # data1 = b'this is a test'
+    # print(eth_k.sign_msg(data).recover_public_key_from_msg(data))
+    # # print(eth_k.sign_msg(data).verify_msg(data1, eth_k.public_key))
+    #
+    # '''Encryption'''
+    # # mtext = encrypt(sk_hex, data)
+    # # print(mtext)
+    # # ptext = decrypt(pk_hex, mtext)
+    # # print(ptext)
+    # sign = sk.sign_msg(data)
+    #
+    # all = {'sign': sign}
+    # print(all)
+    # print(getAddress(pk_hex) == getAddress(all['sign'].recover_public_key_from_msg(data).to_hex()))

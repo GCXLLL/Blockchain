@@ -234,10 +234,10 @@ def createAccount():
     eth_k = generate_sk()
     pk = eth_k.public_key
     account = getAddress(pk.to_hex())
-    pk_hex = sk2hex(pk)
+    sk_hex = sk2hex(eth_k)
     response = {
         'Account': account,
-        'PrivateKey': pk_hex
+        'PrivateKey': sk_hex
     }
 
     # for test only, send 100 to the account
