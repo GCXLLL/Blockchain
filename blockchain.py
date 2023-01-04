@@ -1,6 +1,9 @@
 import binascii
 import hashlib
 import json
+import os
+import shutil
+
 import requests
 from time import time
 from urllib.parse import urlparse
@@ -34,7 +37,7 @@ class BlockChain(object):
         stateRoot = trie.root().hex()
         trie.close()
         # create the genesis block
-        self.new_block(previous_hash=1, stateRoot=stateRoot, proof=100)
+        self.new_block(previous_hash=1, stateRoot=stateRoot, proof=100, trans=account)
 
 
     @staticmethod
@@ -179,10 +182,44 @@ class BlockChain(object):
 
         return True
 
+    def check_chain(self, chain):
+        '''
+        This function is to check whether all blocks of new chain are valid
+        :param
+        chain: list
+        :return:
+        flag: bool
+        '''
+        # deal with genesis block
+        account = chain[0]['transactions']
+        # init world state
+        trie = Level1db()
+        trie.update(account.encode(), b'100')
+        trie.close()
+        for n in range(1, len(chain)):
+            msg, flag = self.valid_come_block(
+                block=chain[n],
+                last_block=chain[n-1],
+                path1='./data/pre1',
+                path2='./data/pre2')
+            if not flag:
+                shutil.rmtree('./data/pre1')
+                shutil.rmtree('./data/pre2')
+                return False
+            return True
+
     def resolve_conflicts(self):
-        # this is our Consensus Algorithm, it resolves conflicts by replacing
-        # our chain with the longest one in the network.
-        addChain = None
+        '''
+        this is our Consensus Algorithm, it resolves conflicts by replacing
+        our chain with the longest one in the network.
+        '''
+        # essential variables
+        addChain = None  # new valid longer chain
+        extension = None  # identify how to replace the new chain
+        # formal leveldb to replace existing leveldb
+        os.mkdir('./data/for1')
+        os.mkdir('./data/for2')
+
         neighbours = self.nodes
 
         # we are only looking for the chains longer than ours
@@ -202,31 +239,69 @@ class BlockChain(object):
                 if length > current_length and self.valid_chain(chain):
                     newChain = []
                     # check the block
-                    for n in range(current_length, length + 1):
+                    # identify if the new chain the extension of present chain
+                    for n in range(current_length-1, -1, -1):
                         block = chain[n]
-                        msg, flag = self.valid_come_block(block)
-                        if flag:
-                            newChain.append(block)
-                        else:
-                            newChain = None
+                        if block['previous_hash'] == self.chain[n]['previous_hash']:
                             break
-                    # if valid, add blocks to addChain and change current_length
-                    if newChain:
-                        current_length = length
-                        addChain = list(newChain)  # change address of list
+                    if n != 0:
+                        # update the difference
+                        for i in range(n, length):
+                            msg, flag = self.valid_come_block(chain[i], chain[i-1])
+                            if flag:
+                                newChain.append(block)
+                            else:
+                                newChain = None
+                                break
+                        # if valid, add blocks to addChain and change current_length
+                        if newChain:
+                            current_length = length
+                            addChain = list(newChain)  # change address of list
+                            extension = True
+                    else:
+                        # make a back-up to check
+                        if self.check_chain(chain):
+                            # take place the entire chain
+                            # delete last time directory
+                            shutil.rmtree('./data/for1')
+                            shutil.rmtree('./data/for2')
+                            os.rename('./data/pre1', './data/for1')
+                            os.rename('./data/pre2', './data/for2')
+                            current_length = length
+                            addChain = list(chain)
+                            extension = False
 
         # add new blocks in our chain if we discover a new longer valid chain
         if addChain:
-            for block in addChain:
-                # add block to local
-                self.new_block(
-                    proof=block['proof'],
-                    stateRoot=block['stateRoot'],
-                    previous_hash=block['previous_hash'],
-                    timestamp=block['timestamp'],
-                    tran=block['transactions']
-                )
-            return True
+            if extension:
+                for block in addChain:
+                    # add block to local
+                    self.new_block(
+                        proof=block['proof'],
+                        stateRoot=block['stateRoot'],
+                        previous_hash=block['previous_hash'],
+                        timestamp=block['timestamp'],
+                        tran=block['transactions']
+                    )
+                return True
+            else:
+                # clear blockchain memory
+                self.chain = []
+                # change the storage
+                shutil.rmtree('./data/level1')
+                shutil.rmtree('./data/level2')
+                os.rename('./data/for1', './data/level1')
+                os.rename('./data/for2', './data/level2')
+                # add chain to local
+                for block in addChain:
+                    self.new_block(
+                        proof=block['proof'],
+                        stateRoot=block['stateRoot'],
+                        previous_hash=block['previous_hash'],
+                        timestamp=block['timestamp'],
+                        tran=block['transactions']
+                    )
+                return True
         # Our chain is the longest
         return False
 
@@ -249,8 +324,9 @@ class BlockChain(object):
         change the world state by transactions
         get state root
         get transaction root
-        :return:
-        state root: str
+
+        :returns:
+        state root: str,
         flag: bool
         '''
         # find the last world state
@@ -303,11 +379,9 @@ class BlockChain(object):
     def get_transaction(self, tranHash):
         '''
         get transaction by hash
-        :param
-        tranHash: str
-        :return:
-        tran: dict
-        flag: bool
+
+        :param tranHash: str
+        :returns: tran: dict, flag: bool
         '''
 
         level2 = Level2db()
@@ -323,11 +397,9 @@ class BlockChain(object):
     def get_balance(self, account):
         '''
         get the balance of the given account
-        :parameter:
-        account: str
-        :return:
-        balance: str
-        flag: bool
+
+        :param account: str
+        :returns: flag: bool, balance: str
         '''
         # find the last world state
         last_block = self.last_block
@@ -344,38 +416,47 @@ class BlockChain(object):
         state.close()
         return balance, flag
 
-    def valid_come_block(self, block):
+    def valid_come_block(self, block, last_block=None, path1=None, path2=None):
         '''
-        check the received block
+        check whether the received block is valid
 
-        :param
-        block: dict
-        :return:
-        message: str
-        flag: bool
+        :param block: dict
+        :param last_block: dict
+        :param path1: str
+        :param path2: str
+        :return: message: str
+        :return: flag: bool
         '''
-        last_block = self.last_block
 
-        # check the index
-        if block['index'] != len(self.chain)+1:
-            return 'Wrong Index', False
+        if last_block is None:
+            # for one received block
+            last_block = self.last_block
+            # check the index
+            if block['index'] != len(self.chain)+1:
+                return 'Wrong Index', False
 
-        # check previous hash
-        if block['previous_hash'] != self.hash(self.chain[-1]):
-            return 'Wrong Previous_hash', False
+            # check previous hash
+            if block['previous_hash'] != self.hash(self.chain[-1]):
+                return 'Wrong Previous_hash', False
 
-        # check pow
-        if not self.validate_proof(last_block['proof'], block['proof']):
-            return 'Wrong Proof of Work', False
+            # check pow
+            if not self.validate_proof(last_block['proof'], block['proof']):
+                return 'Wrong Proof of Work', False
 
         # find the last world state
 
         last_stateRoot = last_block['stateRoot']
         root = binascii.unhexlify(last_stateRoot)
         # get the world state MPT
-        trie = Level1db(root=root)
+        if path1 is None:
+            trie = Level1db(root=root)
+        else:
+            trie = Level1db(root=root, path=path1)
         # connect to level2db
-        level2 = Level2db()
+        if path2 is None:
+            level2 = Level2db()
+        else:
+            level2 = Level2db(path=path2)
 
         # check transactions and world state
         for tran in block['transactions']:

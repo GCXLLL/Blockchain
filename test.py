@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from level1db import Level1db
 import binascii
 
@@ -30,11 +33,5 @@ from mpt import MerklePatriciaTrie
 # print("Root is {}".format(old_root))
 # print("Root hash is {}".format(old_root_hash.hex()))
 
-def create_file(string):
-    with open('./test', 'w') as f:
-        f.write(string)
-
-
-with open("test/node1/data/baseCoin.txt", "r") as f:
-    print(f.read())
+os.rename('./try', './test')
 

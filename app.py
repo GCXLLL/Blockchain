@@ -205,6 +205,8 @@ def come_block():
             timestamp=block['timestamp'],
             tran=block['transactions']
         )
+        # broadcast the new block
+        blockchain.broadcast_block(block)
         return jsonify(msg + ': Succeed to add'), 200
     else:
         return jsonify('Invalid Block: ' + msg), 500
