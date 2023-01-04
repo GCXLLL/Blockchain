@@ -7,7 +7,7 @@ from mpt import keccak_hash, NibblePath, Node
 
 
 class Level1db:
-    def __init__(self, root=None, secure=False):
+    def __init__(self, root=None, secure=False, path='./data/level1'):
         """
         Creates a new instance of MPT.
 
@@ -29,7 +29,7 @@ class Level1db:
             An instance of MPT.
         """
 
-        self._storage = plyvel.DB('./data/level1', create_if_missing=True)
+        self._storage = plyvel.DB(path, create_if_missing=True)
         self._root = root
         self._secure = secure
     def close(self):

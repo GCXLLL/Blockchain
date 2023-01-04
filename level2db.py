@@ -4,8 +4,8 @@ import rlp
 import json
 
 class Level2db:
-    def __init__(self):
-        self.db = plyvel.DB('./data/level2', create_if_missing=True)
+    def __init__(self, path='./data/level2'):
+        self.db = plyvel.DB(path, create_if_missing=True)
         self.transaction = {}
         self.block = {}
         self.receipt = {}
