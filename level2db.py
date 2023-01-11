@@ -59,7 +59,11 @@ class Level2db:
         root hash: str
 
         '''
-        return self.trie.root_hash().hex()
+        hash = self.trie.root_hash().hex()
+        # update the transaction trie
+        self.storage = {}
+        self.trie = MerklePatriciaTrie(self.storage)
+        return hash
 
     def close(self):
         self.db.close()

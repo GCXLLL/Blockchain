@@ -67,6 +67,7 @@ class BlockChain(object):
         for tran in transaction:
             tran_hash = tran['hash']
             if tran_hash != 0:  # avoid transaction in genesis block
+                level2.putTx2trie(tran_hash, tran)
                 level2.putTransaction(tran_hash, tran)
 
         # get transaction root
@@ -78,7 +79,7 @@ class BlockChain(object):
         block = {
             'index': len(self.chain)+1,
             'timestamp': timestamp or time(),
-            'transactions': trans or self.current_transactions,
+            'transactions': transaction,
             'proof': proof,
             'previous_hash': previous_hash or self.hash(self.chain[-1]),
             'receiptsRoot': rxRoot,
@@ -131,12 +132,12 @@ class BlockChain(object):
         # adds a new transaction into the list of transactions
         # these transactions go into the next mined block
         self.current_transactions.append({
-            'sender': sender,
-            'recipient': recipient,
-            'value': amount,
             'data': data,
             'hash': hash,
-            'sign': sign
+            'recipient': recipient,
+            'sender': sender,
+            'sign': sign,
+            'value': amount
         })
         return int(self.last_block['index'])+1, hash
 
@@ -204,7 +205,7 @@ class BlockChain(object):
         # deal with genesis block
         account = chain[0]['transactions'][0]['recipient']
         # init world state
-        trie = Level1db()
+        trie = Level1db(path='./data/pre1')
         trie.update(account.encode(), b'100')
         trie.close()
         for n in range(1, len(chain)):
@@ -214,10 +215,12 @@ class BlockChain(object):
                 path1='./data/pre1',
                 path2='./data/pre2')
             if not flag:
+                print('block {} is wrong'.format(n+1))
+                print(msg)
                 shutil.rmtree('./data/pre1')
                 shutil.rmtree('./data/pre2')
                 return False
-            return True
+        return True
 
     def resolve_conflicts(self):
         '''
@@ -292,7 +295,7 @@ class BlockChain(object):
                         stateRoot=block['stateRoot'],
                         previous_hash=block['previous_hash'],
                         timestamp=block['timestamp'],
-                        tran=block['transactions']
+                        trans=block['transactions']
                     )
                 return True
             else:
@@ -310,10 +313,12 @@ class BlockChain(object):
                         stateRoot=block['stateRoot'],
                         previous_hash=block['previous_hash'],
                         timestamp=block['timestamp'],
-                        tran=block['transactions']
+                        trans=block['transactions']
                     )
                 return True
         # Our chain is the longest
+        shutil.rmtree('./data/for1')
+        shutil.rmtree('./data/for2')
         return False
 
     def valid_transaction(self):
@@ -455,7 +460,7 @@ class BlockChain(object):
                 return 'Wrong Proof of Work', False
 
         # find the last world state
-
+        print(last_block['stateRoot'])
         last_stateRoot = last_block['stateRoot']
         root = binascii.unhexlify(last_stateRoot)
         # get the world state MPT
@@ -519,10 +524,11 @@ class BlockChain(object):
         level2.close()
 
         # check the state root and transaction root
-        if stateRoot != block[stateRoot]:
+        if stateRoot != block['stateRoot']:
             return 'Wrong State Root', False
 
         if transactionRoot != block['transactionRoot']:
+            print(transactionRoot, ' & ', block['transactionRoot'])
             return 'Wrong Transaction Root', False
 
         return 'Valid Block', True

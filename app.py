@@ -195,7 +195,7 @@ def come_block():
     block = request.get_json()
 
     # check the block
-    msg, flag = blockchain.valid_come_block(block)
+    msg, flag = blockchain.valid_come_block(block=block)
     if flag:
         # add block to local
         blockchain.new_block(
@@ -203,7 +203,7 @@ def come_block():
             stateRoot=block['stateRoot'],
             previous_hash=block['previous_hash'],
             timestamp=block['timestamp'],
-            tran=block['transactions']
+            trans=block['transactions']
         )
         # broadcast the new block
         blockchain.broadcast_block(block)

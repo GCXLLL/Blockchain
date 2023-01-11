@@ -4,6 +4,7 @@ import shutil
 from level1db import Level1db
 import binascii
 
+from level2db import Level2db
 from mpt import MerklePatriciaTrie
 # old_trie = Level1db()
 # for n in range(100):
@@ -33,5 +34,16 @@ from mpt import MerklePatriciaTrie
 # print("Root is {}".format(old_root))
 # print("Root hash is {}".format(old_root_hash.hex()))
 
-os.rename('./try', './test')
+level = Level2db(path='./test1')
+tran = {
+            'data': 'Mining',
+            'hash': '3bb275e6539a41baa866a6ff9d304abc8e200ac8c97970c5e3f7ff0baf9f90b0',
+            'recipient': 'd601f6d2df1abc6724ffaf4a0aafd759316d2493',
+            'sender': 0,
+            'sign': None,
+            'value': 100
+}
+level.putTx2trie('3bb275e6539a41baa866a6ff9d304abc8e200ac8c97970c5e3f7ff0baf9f90b0', tran)
+print(level.get_tran_hash())
+level.close()
 
