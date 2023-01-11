@@ -172,7 +172,7 @@ def register_nodes():
     return jsonify(response), 200
 
 
-@app.route('/nodes/resolve', methods=['POST'])
+@app.route('/nodes/resolve', methods=['GET'])
 def consensus():
     # an attempt to resolve conflicts to reach the consensus
     conflicts = blockchain.resolve_conflicts()

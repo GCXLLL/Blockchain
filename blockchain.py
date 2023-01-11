@@ -33,11 +33,20 @@ class BlockChain(object):
     def init_genesis(self, account):
         # find init world state
         trie = Level1db()
+        # create the transaction
         trie.update(account.encode(), b'100')
         stateRoot = trie.root().hex()
         trie.close()
+        trans = {
+            'sender': 0,
+            'recipient': account,
+            'value': 100,
+            'data': 0,
+            'hash': 0,
+            'sign': 0
+        }
         # create the genesis block
-        self.new_block(previous_hash=1, stateRoot=stateRoot, proof=100, trans=account)
+        self.new_block(previous_hash=1, stateRoot=stateRoot, proof=100, trans=[trans])
 
 
     @staticmethod
@@ -57,7 +66,8 @@ class BlockChain(object):
         level2 = Level2db()
         for tran in transaction:
             tran_hash = tran['hash']
-            level2.putTransaction(tran_hash, tran)
+            if tran_hash != 0:  # avoid transaction in genesis block
+                level2.putTransaction(tran_hash, tran)
 
         # get transaction root
         tranRoot = level2.get_tran_hash()
@@ -101,6 +111,7 @@ class BlockChain(object):
         with open("data/nodes.txt", "a") as f:
             for node in self.nodes:
                 f.write(node + '\n')
+                print('succeed to write: ', node)
 
     def new_transaction(self, sender, recipient, amount, data, nonce, sk=None):
         # get hash value of transaction
@@ -109,7 +120,7 @@ class BlockChain(object):
             'recipient': recipient,
             'value': amount,
             'data': data,
-            'nonce': nonce # avoid hash conflict
+            'nonce': nonce  # avoid hash conflict
         }
         hash = self.hash(baseTran)
         # identify the sender
@@ -191,7 +202,7 @@ class BlockChain(object):
         flag: bool
         '''
         # deal with genesis block
-        account = chain[0]['transactions']
+        account = chain[0]['transactions'][0]['recipient']
         # init world state
         trie = Level1db()
         trie.update(account.encode(), b'100')

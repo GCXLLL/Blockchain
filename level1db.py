@@ -9,10 +9,7 @@ from mpt import keccak_hash, NibblePath, Node
 class Level1db:
     def __init__(self, root=None, secure=False, path='./data/level1'):
         """
-        Creates a new instance of MPT.
-
-        MerklePatriciaTrie works like a wrapper over provided storage. Storage must implement dict-like interface.
-        Any data structure that implements `__getitem__` and `__setitem__` should be OK.
+        Creates a new instance of MPT for layer 1.
 
         Parameters
         ----------
@@ -22,6 +19,8 @@ class Level1db:
             (Optional) Root node (not root hash!) of the trie. If not provided, tree will be considered empty.
         secure: bool
             (Optional) In secure mode all the keys are hashed using keccak256 internally.
+        path: basestring
+            The path of leveldb
 
         Returns
         -------
