@@ -1,0 +1,8 @@
+coincurve==17.0.0
+eth_keys==0.4.0
+Flask==2.1.1
+plyvel==1.5.0
+plyvel_wheels==1.3.0
+pycryptodome==3.16.0
+requests==2.27.1
+rlp==2.0.1

@@ -1,5 +1,4 @@
 import binascii
-import hashlib
 import json
 import os
 import shutil
@@ -7,10 +6,10 @@ import shutil
 import requests
 from time import time
 from urllib.parse import urlparse
-from ecc import*
-from level1db import Level1db
-from level2db import Level2db
-from utils import get_basecoin
+from utils.ecc import*
+from storage.level1db import Level1db
+from storage.level2db import Level2db
+from utils.utils import get_basecoin
 
 
 class BlockChain(object):

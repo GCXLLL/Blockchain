@@ -1,10 +1,9 @@
 from uuid import uuid4
-import os
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request
 from blockchain import*
-from ecc import*
-from utils import*
+from utils.ecc import*
+from utils.utils import store_basecoin, validate_account
 
 # initiate the node
 app = Flask(__name__)
