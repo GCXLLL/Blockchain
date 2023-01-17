@@ -326,7 +326,7 @@ ul.nice-list span {color: #666;}
 	margin-right: 12px;
 	padding: 2px 0 5px;
 	text-align: center;
-	width: 46px;
+	width: 66px;
 }
 .archive-post .post-date {
 	border: none;
@@ -509,28 +509,28 @@ ul.tabbed a {text-decoration: none;}
 
 .content {font-size: 1.1em;}
 #content-wrapper {background: #F6F6F6 url('img/content-wrapper.gif') repeat-y center top;}
-.content#content-two-columns {background: url('img/content-two-columns.gif') repeat-y left top;}
+.content#content-two-columns {background:  repeat-y left top;}
 
 
 /* Main */
 
 #main-wrapper {
 	float: right;
-	width: 698px;
+	width: 898px;
 }
 #main {padding: 24px;}
 
-#main .text-separator, #featured .text-separator {
-	color: #AAA;
-	padding: 0 5px;
-}
+/*#main .text-separator, #featured .text-separator {*/
+/*	color: #AAA;*/
+/*	padding: 0 5px;*/
+/*}*/
 
 
 /* Sidebar */
 
 #sidebar-wrapper {
 	float: left;
-	width: 260px;
+	width: 60px;
 }
 
 
