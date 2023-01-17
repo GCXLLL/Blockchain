@@ -14,6 +14,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 # bootstrap = Bootstrap4(app)
 
 chain = None
+current_node = '127.0.0.1:5000'
 
 @app.route('/')
 def index():
@@ -32,7 +33,8 @@ def notarization():
 
 @app.route('/chain')
 def chain():
-    response = requests.get('http://127.0.0.1:5000/chain_request')
+    global current_node
+    response = requests.get(f'http://{current_node}/chain_request')
     hash = []
     timestamp = []
     tran = []
@@ -54,7 +56,10 @@ def chain():
 @app.route('/management')
 def management():
     if session.get('pswd'):
-        return render_template('management.html')
+        kwargs = {
+            "node": current_node
+        }
+        return render_template('management.html', **kwargs)
     else:
         pswd = None
         pswd = request.args.get("password")
@@ -62,7 +67,10 @@ def management():
             print(pswd)
             if pswd == 'chenxiaoguo':
                 session['pswd'] = pswd
-                return render_template('management.html')
+                kwargs = {
+                    "node": current_node
+                }
+                return render_template('management.html', **kwargs)
         print('no pswd')
         return render_template('management_login.html')
 
@@ -74,6 +82,72 @@ def get_block():
     if chain:
         show_block(block=chain[int(index)-1])
     return render_template('block.html')
+
+
+@app.route('/changeNode', methods=['POST'])
+def change_node():
+    node = request.args.get("node")
+    print(node)
+    if node:
+        global current_node
+        current_node = node
+        kwargs = {
+            "node": current_node
+        }
+    return render_template('management.html', **kwargs)
+
+
+@app.route('/addNode', methods=['POST'])
+def add_node():
+    node = request.args.get("node")
+    print(node)
+    if node:
+        nodes = {'nodes': node}
+        global current_node
+        response = requests.post(f'http://{current_node}/nodes/add', json=nodes)
+        if response.status_code == 200:
+            kwargs = {
+                "add": response
+            }
+            return render_template('management.html', **kwargs)
+    kwargs = {
+        "add": 'Fail to add'
+    }
+    return render_template('management.html', **kwargs)
+
+
+@app.route('/changeBasecoin', methods=['POST'])
+def change_basecoin():
+    node = request.args.get("node")
+    print(node)
+    if node:
+        nodes = {'baseCoin': node}
+        global current_node
+        response = requests.post(f'http://{current_node}/account/changeBasecoin', json=nodes)
+        if response.status_code == 200:
+            kwargs = {
+                "baseCoin": response
+            }
+            return render_template('management.html', **kwargs)
+    kwargs = {
+        "baseCoin": 'Fail to change'
+    }
+    return render_template('management.html', **kwargs)
+
+
+@app.route('/resolve', methods=['GET'])
+def resolve_conflict():
+    global current_node
+    response = requests.get(f'http://{current_node}/nodes/resolve')
+    if response.status_code == 200:
+        kwargs = {
+            "resolve": response['message']
+        }
+        return render_template('management.html', **kwargs)
+    kwargs = {
+        "resolve": response['message']
+    }
+    return render_template('management.html', **kwargs)
 
 
 @app.route('/empty_page')

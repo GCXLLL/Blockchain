@@ -60,6 +60,28 @@
 	</div>
 </div>
 
+<div id="subnav-wrapper">
+	<div id="subnav-wrapper-2">
+
+		<div class="center-wrapper">
+
+			<div id="subnav">
+
+				<ul class="tabbed">
+					<li class="current_page_item"><a href="#currentNode">Current Node</a></li>
+					<li><a href="#addNode">Add Node</a></li>
+					<li><a href="#resolve">Resolve Conflict</a></li>
+					<li><a href="#changeBasecoin">Change Basecoin</a></li>
+				</ul>
+
+				<div class="clearer">&nbsp;</div>
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
 <div id="content-wrapper">
 	<div class="center-wrapper">
 
@@ -67,139 +89,110 @@
 
 			<div id="main-wrapper">
 				<div id="main">
+					<a name="currentNode">
+						<h1>Current Node</h1>
+						<h2><a>{{node}}</a></h2>
 
-					<h1>Heading 1</h1>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+						<div class="archive-separator"></div>
 
-					<h2>Heading 2</h2>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+						<form action="/changeNode" method="post">
+							<fieldset>
 
-					<h3>Heading 3</h3>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+								<div class="legend"><h2>Change Node</h2></div>
 
-					<h4>Heading 4</h4>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+								<div class="form-row">
 
-					<h5>Heading 5</h5>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+									<div class="form-property form-required">New Node</div>
+									<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
 
-					<h6>Heading 6</h6>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+									<div class="clearer">&nbsp;</div>
 
-					<div class="content_separator"></div>
+								</div>
 
-					<h2>Images in text</h2>
+								<div class="form-row form-row-submit">
 
-					<p>Curabitur faucibus risus quis lectus. <a href="#">Donec vehicula</a>. Pellentesque nec, lectus. Nullam dictum sem. Phasellus varius. Vestibulum in felis in mauris consequat molestie</p>
+									<div class="form-value"><input type="submit" class="button" value="Submit &#187;" /></div>
 
-					<img src="sample-thumbnail.jpg" width="75" height="75" alt="" class="alignleft" />
+									<div class="clearer">&nbsp;</div>
 
-					<p>Consectetur adipiscing elit. In nisi. Duis condimentum est nec augue blandit scelerisque. Phasellus varius. Vestibulum in felis in mauris consequat molestie. Sem nec pellentesque condimentum, turpis massa ultricies nisi, at molestie justo eros ac velit.</p>
+								</div>
+							</fieldset>
+						</form>
+					</a>
+					<div class="archive-separator"></div>
 
-					<img src="sample-thumbnail.jpg" width="75" height="75" alt="" class="alignright" />
+					<a name="addNode">
+						<h1>Add Node</h1>
+						<form action="/addNode" method="post">
+							<fieldset>
 
-					<p>Curabitur euismod mi ac neque. Cras vel tortor molestie <a href="#">tortor luctus</a> facilisis. Nulla a nunc. Vivamus est. Integer ac sem quis ipsum dignissim sodales. Nam pulvinar sem eu nibh. Suspendisse non nulla et ligula bibendum facilisis. Suspendisse potenti. Vivamus leo.</p>
+								<div class="form-row">
 
-					<p>Nulla lacus tortor, ornare vitae, vulputate vitae, sed quis magna. Pellentesque urna urna, bibendum non, ornare in, sollicitudin quis, est.</p>
+									<div class="form-property form-required">New Node</div>
+									<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
 
-					<div class="clearer">&nbsp;</div>
+									<div class="clearer">&nbsp;</div>
 
-					<div class="content_separator"></div>
+								</div>
 
-					<h2>Messages</h2>
+								<div class="form-row form-row-submit">
 
-					<div class="success">Success!</div>
+									<div class="form-value"><input type="submit" class="button" value="Add &#187;" /></div>
 
-					<div class="notice">Notice</div>
+									<div class="clearer">&nbsp;</div>
 
-					<div class="error">Error..</div>
+								</div>
+							</fieldset>
+						</form>
+						<h2><a>{{add}}</a></h2>
+					</a>
 
-					<div class="content_separator"></div>
+					<div class="archive-separator"></div>
+					<a name="resolve">
+						<h1>Resolve Conflict</h1>
+						<form action="/resolve" method="get">
+							<fieldset>
+								<div class="form-row form-row-submit">
 
-					<h2>Blockquote</h2>
+									<div class="form-value"><input type="submit" class="button" value="Resolve &#187;" /></div>
 
-					<blockquote>
-						<p><span>&quot;</span> Praesent orci nisi, interdum quis, tristique vitae, consectetur sed, arcu. Ut at sapien non dolor semper sollicitudin. Etiam semper erat quis odio. Quisque commodo suscipit velit. Nulla facilisi. <span>&quot;</span></p>
-						- Duis justo quam
-					</blockquote>
+									<div class="clearer">&nbsp;</div>
 
-					<div class="content_separator"></div>
+								</div>
+							</fieldset>
+						</form>
+						<h2><a>{{resolve}}</a></h2>
+					</a>
 
-					<h2>Lists</h2>
+					<div class="archive-separator"></div>
+					<a name="changeBasecoin">
+						<h1>Change Basecoin</h1>
+						<form action="/changeBasecoin" method="post">
+							<fieldset>
 
-					<h3>Unsorted list</h3>
-					<ul>
-						<li>Blandit in, interdum a</li>
-						<li>Ultrices non lectus</li>
-						<li>Nunc id odio</li>
-						<li>Fusce ultricies</li>
-					</ul>
+								<div class="form-row">
 
-					<h3>Ordered list</h3>
-					<ol>
-						<li>Blandit in, interdum a</li>
-						<li>Ultrices non lectus</li>
-						<li>Nunc id odio</li>
-						<li>Fusce ultricies</li>
-					</ol>
+									<div class="form-property form-required">New Basecoin</div>
+									<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
 
-					<h3>Definition list</h3>
+									<div class="clearer">&nbsp;</div>
 
-					<dl>
-						<dt>title</dt>
-						<dd>definition</dd>
-						<dd>definition</dd>
-						<dt>title</dt>
-						<dt>title</dt>
-						<dd>definition</dd>
-						<dt>title</dt>
-						<dd>definition</dd>
-					</dl>
+								</div>
 
-					<div class="content_separator"></div>
+								<div class="form-row form-row-submit">
 
-					<h2>Tables</h2>
+									<div class="form-value"><input type="submit" class="button" value="Change &#187;" /></div>
 
-					<h3>Data table</h3>
+									<div class="clearer">&nbsp;</div>
 
-					<table class="data-table">
-						<tr>
-							<th>Property 1</th>
-							<th>Property 2</th>
-							<th>Property 3</th>
-							<th>Property 4</th>
-						</tr>
-						<tr class="even">
-							<td>Value 1.1</td>
-							<td>Value 1.2</td>
-							<td>Value 1.3</td>
-							<td>Value 1.4</td>
-						</tr>
-						<tr>
-							<td>Value 2.1</td>
-							<td>Value 2.2</td>
-							<td>Value 2.3</td>
-							<td>Value 2.4</td>
-						</tr>
-						<tr class="even">
-							<td>Value 3.1</td>
-							<td>Value 3.2</td>
-							<td>Value 3.3</td>
-							<td>Value 3.4</td>
-						</tr>
-						<tr>
-							<td>Value 4.1</td>
-							<td>Value 4.2</td>
-							<td>Value 4.3</td>
-							<td>Value 4.4</td>
-						</tr>
-					</table>
-
+								</div>
+							</fieldset>
+						</form>
+						<h2><a>{{baseCoin}}</a></h2>
+					</a>
 				</div>
 			</div>
-
 			<div class="clearer">&nbsp;</div>
-
 		</div>
 
 	</div>
