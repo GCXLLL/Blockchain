@@ -55,9 +55,14 @@ def chain():
 
 @app.route('/management')
 def management():
+    global current_node
     if session.get('pswd'):
+
+        response = requests.get(f'http://{current_node}/neighbour_request')
+
         kwargs = {
-            "node": current_node
+            "node": current_node,
+            "neighbours": response.json()['neighbours']
         }
         return render_template('management.html', **kwargs)
     else:
@@ -67,8 +72,11 @@ def management():
             print(pswd)
             if pswd == 'chenxiaoguo':
                 session['pswd'] = pswd
+                response = requests.get(f'http://{current_node}/neighbour_request')
+
                 kwargs = {
-                    "node": current_node
+                    "node": current_node,
+                    "neighbours": response.json()['neighbours']
                 }
                 return render_template('management.html', **kwargs)
         print('no pswd')
@@ -84,7 +92,7 @@ def get_block():
     return render_template('block.html')
 
 
-@app.route('/changeNode', methods=['POST'])
+@app.route('/changeNode', methods=['GET'])
 def change_node():
     node = request.args.get("node")
     print(node)
@@ -97,17 +105,18 @@ def change_node():
     return render_template('management.html', **kwargs)
 
 
-@app.route('/addNode', methods=['POST'])
+@app.route('/addNode', methods=['GET'])
 def add_node():
     node = request.args.get("node")
     print(node)
     if node:
         nodes = {'nodes': node}
+        print(nodes)
         global current_node
         response = requests.post(f'http://{current_node}/nodes/add', json=nodes)
         if response.status_code == 200:
             kwargs = {
-                "add": response
+                "add": json.loads(response.content)['new_node'] + ' has been added'
             }
             return render_template('management.html', **kwargs)
     kwargs = {
@@ -116,7 +125,7 @@ def add_node():
     return render_template('management.html', **kwargs)
 
 
-@app.route('/changeBasecoin', methods=['POST'])
+@app.route('/changeBasecoin', methods=['GET'])
 def change_basecoin():
     node = request.args.get("node")
     print(node)
@@ -126,7 +135,7 @@ def change_basecoin():
         response = requests.post(f'http://{current_node}/account/changeBasecoin', json=nodes)
         if response.status_code == 200:
             kwargs = {
-                "baseCoin": response
+                "baseCoin": json.loads(response.content)['BaseCoin']
             }
             return render_template('management.html', **kwargs)
     kwargs = {
@@ -141,11 +150,11 @@ def resolve_conflict():
     response = requests.get(f'http://{current_node}/nodes/resolve')
     if response.status_code == 200:
         kwargs = {
-            "resolve": response['message']
+            "resolve": json.loads(response.content)['message']
         }
         return render_template('management.html', **kwargs)
     kwargs = {
-        "resolve": response['message']
+        "resolve": json.loads(response.content)['message']
     }
     return render_template('management.html', **kwargs)
 

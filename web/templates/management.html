@@ -69,7 +69,7 @@
 
 				<ul class="tabbed">
 					<li class="current_page_item"><a href="#currentNode">Current Node</a></li>
-					<li><a href="#addNode">Add Node</a></li>
+					<li><a href="#addNode">Neighbour Nodes</a></li>
 					<li><a href="#resolve">Resolve Conflict</a></li>
 					<li><a href="#changeBasecoin">Change Basecoin</a></li>
 				</ul>
@@ -91,18 +91,18 @@
 				<div id="main">
 					<a name="currentNode">
 						<h1>Current Node</h1>
-						<h2><a>{{node}}</a></h2>
+						<h2>{{node}}</h2>
 
 						<div class="archive-separator"></div>
 
-						<form action="/changeNode" method="post">
+						<form action="/changeNode" method="get">
 							<fieldset>
 
-								<div class="legend"><h2>Change Node</h2></div>
+								<div class="legend"><h2>Change Node </h2></div>
 
 								<div class="form-row">
 
-									<div class="form-property form-required">New Node</div>
+									<div class="form-property form-required">New Node (in form of http://ip:port)</div>
 									<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
 
 									<div class="clearer">&nbsp;</div>
@@ -122,13 +122,16 @@
 					<div class="archive-separator"></div>
 
 					<a name="addNode">
-						<h1>Add Node</h1>
-						<form action="/addNode" method="post">
+						<h1>Neighbour Nodes</h1>
+						<h3>{{neighbours}}</h3>
+
+						<form action="/addNode" method="get">
 							<fieldset>
+								<div class="legend"><h2>Add Node </h2></div>
 
 								<div class="form-row">
 
-									<div class="form-property form-required">New Node</div>
+									<div class="form-property form-required">New Node (in form of http://ip:port)</div>
 									<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
 
 									<div class="clearer">&nbsp;</div>
@@ -167,7 +170,7 @@
 					<div class="archive-separator"></div>
 					<a name="changeBasecoin">
 						<h1>Change Basecoin</h1>
-						<form action="/changeBasecoin" method="post">
+						<form action="/changeBasecoin" method="get">
 							<fieldset>
 
 								<div class="form-row">

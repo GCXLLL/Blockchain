@@ -150,24 +150,40 @@ def chain():
     }
     return jsonify(response), 200
 
+
+@app.route('/neighbour_request', methods=['GET'])
+def neighbours():
+    response = {
+        'neighbours': list(blockchain.nodes)
+    }
+    return jsonify(response), 200
+
+
 @app.route('/nodes/add', methods=['POST'])
 def register_nodes():
     values = request.get_json()
 
     print('values', values)
     nodes = values.get('nodes')
+    print(nodes)
     if nodes is None:
-        return "Error: Please supply a valid list of nodes", 400
+        return "Error: Please supply a valid node", 400
 
     # register each newly added node
-    for node in nodes:
-        blockchain.register_node(node)
+    flag = blockchain.register_node(nodes)
 
-    response = {
-        'message': "New nodes have been added",
-        'all_nodes': list(blockchain.nodes),
-    }
+    if flag:
+        response = {
+            'message': "New nodes have been added",
+            'all_nodes': list(blockchain.nodes),
+            'new_node': nodes
+        }
 
+
+    else:
+        response = {
+            'message': "Wrong form of node, please in http://ip:port"
+        }
     return jsonify(response), 200
 
 

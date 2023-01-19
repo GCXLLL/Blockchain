@@ -28,6 +28,7 @@ class BlockChain(object):
             # if not exist, pass
             pass
         level2.close()
+        print('nodes: ', self.nodes)
 
     def init_genesis(self, account):
         # find init world state
@@ -108,7 +109,7 @@ class BlockChain(object):
 
     def store_nodes(self):
         # listen the change of the nodes
-        with open("data/nodes.txt", "a") as f:
+        with open("data/nodes.txt", "w") as f:
             for node in self.nodes:
                 f.write(node + '\n')
                 print('succeed to write: ', node)
@@ -159,19 +160,17 @@ class BlockChain(object):
     def register_node(self, address):
         # add a new node to the list of nodes
         parsed_url = urlparse(address)
-        self.nodes.add(parsed_url.netloc)
-        self.store_nodes()
+        if parsed_url.netloc and parsed_url.netloc != '':
+            print('New: ', parsed_url.netloc)
+            self.nodes.add(parsed_url.netloc)
+            self.store_nodes()
+            return True
+        else:
+            return False
 
     def full_chain(self):
         # xxx returns the full chain and a number of blocks
         pass
-
-    def register_miner_node(self, address):
-        # add on the new miner node onto the list of nodes
-        parsed_url = urlparse(address)
-        self.nodes.add(parsed_url.netloc)
-        self.store_nodes()
-        return
 
     def valid_chain(self, chain):
 
