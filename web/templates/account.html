@@ -60,26 +60,6 @@
 	</div>
 </div>
 
-<div id="subnav-wrapper">
-	<div id="subnav-wrapper-2">
-
-		<div class="center-wrapper">
-
-			<div id="subnav">
-
-				<ul class="tabbed">
-					<li class="current_page_item"><a href="#">Audio Software</a></li>
-					<li><a href="#">Video Software</a></li>
-					<li><a href="#">Third Party Plugins</a></li>
-				</ul>
-
-				<div class="clearer">&nbsp;</div>
-
-			</div>
-
-		</div>
-	</div>
-</div>
 
 <div id="content-wrapper">
 	<div class="center-wrapper">
@@ -88,28 +68,52 @@
 
 			<div id="main-wrapper">
 				<div id="main">
+					<h1>Create Wallet</h1>
+					<div class="archive-separator"></div>
+					<fieldset>
+						<h4>Address: {{address}}</h4>
+						<h4>Private Key: {{sk}}</h4>
+						<h2>{{warn}}</h2>
+						<br>
+						<form action="/create" method="get">
 
-					<div class="post">
+							<div class="form-row form-row-submit">
 
-						<div class="post-title"><h1>Super Software</h1></div>
+								<div class="form-value"><input type="submit" class="button" value="Create &#187;" /></div>
 
-						<div class="post-body">
+								<div class="clearer">&nbsp;</div>
 
-							<p><img src="sample-thumbnail-2.jpg" width="640" height="200" alt="" class="bordered" /></p>
+							</div>
+						</form>
+					</fieldset>
+					<br>
+					<br>
+					<h1>Check Balance</h1>
+					<div class="archive-separator"></div>
+					<form action="/check_balance" method="get">
+						<fieldset>
 
-							<h2 class="quiet">Introducing the next generation software</h2>
+							<div class="form-row">
 
-							<p class="large">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tincidunt ultricies lectus eget molestie. Nullam ut neque risus, eu consectetur sem.</p>
+								<div class="form-property form-required">Address</div>
+								<div class="form-value"><input type="text" size="32" name="add" class="text" /></div>
 
-							<p>Duis iaculis, velit sit amet molestie scelerisque, neque leo ullamcorper dui, vitae suscipit risus metus non nulla. Vivamus convallis mattis erat in tempus. Curabitur vitae risus risus, vitae bibendum nisi. Aliquam erat volutpat.</p>
+								<div class="clearer">&nbsp;</div>
 
-							<p>Aenean lectus eros, consectetur pulvinar blandit non, varius nec magna. Praesent posuere sapien vel sem egestas commodo. Fusce bibendum nulla sit amet metus iaculis pharetra. Maecenas venenatis ullamcorper pharetra. Cras tincidunt lobortis congue. Sed aliquet purus sit amet massa fringilla auctor. Suspendisse nec nulla neque, eu eleifend leo.</p>
+							</div>
 
-							<p class="large"><a href="#">Try it out</a> <span class="text-separator">|</span> <a href="#">Buy now</a> <span class="text-separator">|</span> <a href="#">Detailed information</a></p>
+							<div class="form-row form-row-submit">
 
-						</div>
+								<div class="form-value"><input type="submit" class="button" value="check &#187;" /></div>
 
-					</div>
+								<div class="clearer">&nbsp;</div>
+
+							</div>
+						</fieldset>
+						<br>
+						<h2>{{balance}}</h2>
+					</form>
+
 
 				</div>
 			</div>

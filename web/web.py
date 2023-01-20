@@ -34,7 +34,10 @@ def notarization():
 @app.route('/chain')
 def chain():
     global current_node
-    response = requests.get(f'http://{current_node}/chain_request')
+    try:
+        response = requests.get(f'http://{current_node}/chain_request')
+    except:
+        return render_template('empty_page.html')
     hash = []
     timestamp = []
     tran = []
@@ -157,6 +160,62 @@ def resolve_conflict():
         "resolve": json.loads(response.content)['message']
     }
     return render_template('management.html', **kwargs)
+
+
+@app.route('/check_balance')
+def check_balance():
+    node = request.args.get("add")
+    print(node)
+    nodes = {'account': node}
+    global current_node
+    try:
+        response = requests.post(f'http://{current_node}/account/getBalance', json=nodes)
+    except:
+        kwargs = {
+            "balance": 'Fail to connect to blockchain'
+        }
+        return render_template('account.html', **kwargs)
+    if response.status_code == 200:
+        kwargs = {
+            "balance": json.loads(response.content)
+        }
+
+    elif response.status_code == 500:
+        kwargs = {
+            "balance": json.loads(response.content)
+        }
+    else:
+        kwargs = {
+            "balance": 'Fail to connect to blockchain'
+        }
+    return render_template('account.html', **kwargs)
+
+
+@app.route('/create')
+def create():
+    global current_node
+    try:
+        response = requests.get(f'http://{current_node}/account/create')
+    except:
+        kwargs = {
+            "address": None,
+            "sk": None,
+            "warn": 'Fail to connect to Blockchain'
+        }
+        return render_template('account.html', **kwargs)
+    if response.status_code == 200:
+        kwargs = {
+            "address": response.json()['Account'],
+            "sk": response.json()['PrivateKey'],
+            "warn": 'Your account is invalid until next block generated!'
+        }
+    else:
+        kwargs = {
+            "address": None,
+            "sk": None,
+            "warn": 'Fail to connect to Blockchain'
+        }
+    return render_template('account.html', **kwargs)
 
 
 @app.route('/empty_page')

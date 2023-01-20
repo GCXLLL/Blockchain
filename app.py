@@ -241,7 +241,7 @@ def changeBasecoin():
     response = {
         'BaseCoin': baseCoin
     }
-    return jsonify(response, 200)
+    return jsonify(response), 200
 
 
 @app.route('/account/getBalance', methods=['POST'])
@@ -249,9 +249,9 @@ def getBalance():
     values = request.get_json()
     res, flag = blockchain.get_balance(values['account'])
     if flag:
-        return jsonify(res, 200)
+        return jsonify(res), 200
     else:
-        return jsonify(res, 500)
+        return jsonify(res), 500
 
 
 @app.route('/account/create', methods=['GET'])
@@ -278,5 +278,5 @@ def createAccount():
 
     nonce_tran = nonce_tran + 1
 
-    return jsonify(response, 200)
+    return jsonify(response), 200
 

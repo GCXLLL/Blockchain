@@ -89,41 +89,50 @@
 
 			<div id="main-wrapper">
 				<div id="main">
-					<a name="currentNode">
-						<h1>Current Node</h1>
-						<h2>{{node}}</h2>
-
-						<div class="archive-separator"></div>
-
-						<form action="/changeNode" method="get">
-							<fieldset>
-
-								<div class="legend"><h2>Change Node </h2></div>
-
-								<div class="form-row">
-
-									<div class="form-property form-required">New Node (in form of http://ip:port)</div>
-									<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
-
-									<div class="clearer">&nbsp;</div>
-
-								</div>
-
-								<div class="form-row form-row-submit">
-
-									<div class="form-value"><input type="submit" class="button" value="Submit &#187;" /></div>
-
-									<div class="clearer">&nbsp;</div>
-
-								</div>
-							</fieldset>
-						</form>
-					</a>
+					<a name="currentNode"></a>
+					<h1>Current Node</h1>
 					<div class="archive-separator"></div>
+					<br>
+					<h2>{{node}}</h2>
+					<br>
+					<form action="/changeNode" method="get">
+						<fieldset>
 
-					<a name="addNode">
+							<div class="legend"><h2>Change Node </h2></div>
+
+							<div class="form-row">
+
+								<div class="form-property form-required">New Node (in form of http://ip:port)</div>
+								<div class="form-value"><input type="text" size="32" name="node" class="text" /></div>
+
+								<div class="clearer">&nbsp;</div>
+
+							</div>
+
+							<div class="form-row form-row-submit">
+
+								<div class="form-value"><input type="submit" class="button" value="Submit &#187;" /></div>
+
+								<div class="clearer">&nbsp;</div>
+
+							</div>
+						</fieldset>
+					</form>
+
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+
+
+					<a name="addNode"></a>
 						<h1>Neighbour Nodes</h1>
+						<div class="archive-separator"></div>
+						<br>
 						<h3>{{neighbours}}</h3>
+						<br>
 
 						<form action="/addNode" method="get">
 							<fieldset>
@@ -147,12 +156,19 @@
 								</div>
 							</fieldset>
 						</form>
+						<br>
 						<h2><a>{{add}}</a></h2>
-					</a>
 
-					<div class="archive-separator"></div>
-					<a name="resolve">
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+
+					<a name="resolve"></a>
 						<h1>Resolve Conflict</h1>
+						<div class="archive-separator"></div>
 						<form action="/resolve" method="get">
 							<fieldset>
 								<div class="form-row form-row-submit">
@@ -164,12 +180,19 @@
 								</div>
 							</fieldset>
 						</form>
+						<br>
 						<h2><a>{{resolve}}</a></h2>
-					</a>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
+					<br>
 
-					<div class="archive-separator"></div>
-					<a name="changeBasecoin">
+
+					<a name="changeBasecoin"></a>
 						<h1>Change Basecoin</h1>
+						<div class="archive-separator"></div>
 						<form action="/changeBasecoin" method="get">
 							<fieldset>
 
@@ -191,8 +214,12 @@
 								</div>
 							</fieldset>
 						</form>
-						<h2><a>{{baseCoin}}</a></h2>
-					</a>
+						<h2>{{baseCoin}}</h2>
+						<br>
+						<br>
+						<br>
+						<br>
+
 				</div>
 			</div>
 			<div class="clearer">&nbsp;</div>
