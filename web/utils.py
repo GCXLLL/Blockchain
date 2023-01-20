@@ -140,7 +140,7 @@ def show_chain(length, hash, timestamp, tran):
     
                             <div class="archive-post-title">
                                 <h3><a href="http://127.0.0.1:5005/getBlock?index={}">{}</a></h3>
-                                <div class="post-date">Mined at <a href="#">{}</a> | <a href="#">{} transactions</a></div>
+                                <div class="post-date">Mined at {} | {} </div>
                             </div>
     
                             <div class="clearer">&nbsp;</div>

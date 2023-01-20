@@ -67,120 +67,19 @@
 
 			<div id="main-wrapper">
 				<div id="main">
+					<h1>Make a Promise</h1>
+					<div class="archive-separator"></div>
 
-					<div class="post">
-
-						<div class="post-title"><h1>Template Information</h1></div>
-
-						<div class="post-date">Posted on Jun 21st at 20:39 by <a href="#">Viktor Persson</a></div>
-
-						<div class="post-body">
-
-							<p>This is a free website template created by <a href="https://vikpe.org/">Viktor Persson</a>, built using tableless XHTML and CSS.</p>
-
-							<p>The latest template version and CMS conversions for platforms such as WordPress and Blogger can be found at the official <a href="https://vikpe.org/archive/arcsin-web-templates/freshmade-software-website-template/">Freshmade Software website template</a> page.</p>
-
-							<p>For more templates, questions and comments please visit <a href="https://vikpe.org/archive/arcsin-web-templates/">Arcsin Web Templates</a>.</p>
-
-							<p>Have fun!</p>
-
-						</div>
-
-						<div class="post-meta">
-							Tagged: <a href="#">Purus</a>, <a href="#">Semper</a>, <a href="#">Vestibulum</a>
-						</div>
-
-					</div>
-
-					<h3 class="left">Comments</h3>
-					<p class="right"><a href="#reply">Leave a reply &#187;</a></p>
-
-					<div class="clearer">&nbsp;</div>
-
-					<div class="comment-list">
-
-						<div class="comment alt">
-
-							<div class="comment-gravatar left"><img alt="" src="sample-gravatar.jpg" height="32" width="32" /></div>
-
-							<div class="comment-author left">
-								Duis porttitor
-								<div class="comment-date"><a href="#">December 20th, 2007 at 9:35 pm</a></div>
-							</div>
-
-							<div class="clearer">&nbsp;</div>
-
-							<div class="comment-body">
-								<p>Hi</p>
-							</div>
-
-						</div>
-
-						<div class="comment">
-
-							<div class="comment-gravatar left"><img alt="" src="sample-gravatar.jpg" height="32" width="32" /></div>
-
-							<div class="comment-author left">
-								<a href="#">Elementum</a>
-								<div class="comment-date"><a href="#">December 21st, 2007 at 12:46 pm</a></div>
-							</div>
-
-							<div class="clearer">&nbsp;</div>
-
-							<div class="comment-body">
-								<p>Comments are cool!</p>
-							</div>
-
-						</div>
-
-						<div class="comment alt">
-
-							<div class="comment-gravatar left"><img alt="" src="sample-gravatar.jpg" height="32" width="32" /></div>
-
-							<div class="comment-author left">
-								<a href="#">Posuere tristique</a>
-								<div class="comment-date"><a href="#">December 24th, 2007 at 5:02 pm</a></div>
-							</div>
-
-							<div class="clearer">&nbsp;</div>
-
-							<div class="comment-body">
-								<p>Hi, wanna see comments..</p>
-							</div>
-
-						</div>
-
-						<div class="comment">
-
-							<div class="comment-gravatar left">
-								<img alt="" src="sample-gravatar.jpg" height="32" width="32" />
-							</div>
-
-							<div class="comment-author left">
-								<a href="#">Aenean</a>
-								<div class="comment-date"><a href="#">January 18th, 2008 at 7:54 pm</a></div>
-							</div>
-
-							<div class="clearer">&nbsp;</div>
-
-							<div class="comment-body">
-								<p>Nice template!</p>
-							</div>
-
-						</div>
-
-					</div>
-
-					<form action="" method="post" id="reply">
+					<form action="/new_trans" method="GET">
 
 						<fieldset>
 
-							<div class="legend"><h3>Leave a Reply</h3></div>
+
 
 							<div class="form-row">
 
-								<div class="form-property form-required">Your name</div>
-								<div class="form-value"><input type="text" size="32" name="name" value="" class="text" /></div>
+								<div class="form-property form-required">Sender Address</div>
+								<div class="form-value"><input type="text" size="60" name="sender" class="text" /></div>
 
 								<div class="clearer">&nbsp;</div>
 
@@ -188,8 +87,8 @@
 
 							<div class="form-row">
 
-								<div class="form-property">Email</div>
-								<div class="form-value"><input type="text" size="32" name="email" value="" class="text" /></div>
+								<div class="form-property">Recipient Address</div>
+								<div class="form-value"><input type="text" size="60" name="recipient" class="text" /></div>
 
 								<div class="clearer">&nbsp;</div>
 
@@ -197,8 +96,8 @@
 
 							<div class="form-row">
 
-								<div class="form-property">Website</div>
-								<div class="form-value"><input type="text" size="32" name="website" value="" class="text" /></div>
+								<div class="form-property">Balance to Pay</div>
+								<div class="form-value"><input type="text" size="60" name="amount" class="text" /></div>
 
 								<div class="clearer">&nbsp;</div>
 
@@ -206,8 +105,18 @@
 
 							<div class="form-row">
 
-								<div class="form-property form-required">Comment</div>
-								<div class="form-value"><textarea rows="10" cols="46" name="comment"></textarea></div>
+								<div class="form-property form-required">Content</div>
+								<div class="form-value"><textarea rows="10" cols="80" name="data"></textarea></div>
+
+								<div class="clearer">&nbsp;</div>
+
+							</div>
+							<div class="legend"><h3>Please sign with your private key</h3></div>
+
+							<div class="form-row">
+
+								<div class="form-property">Private Key</div>
+								<div class="form-value"><input type="text" size="80" name="sk" class="text" /></div>
 
 								<div class="clearer">&nbsp;</div>
 
@@ -215,7 +124,7 @@
 
 							<div class="form-row form-row-submit">
 
-								<div class="form-value"><input type="submit" class="button" value="Submit Comment &#187;" /></div>
+								<div class="form-value"><input type="submit" class="button" value="Submit &#187;" /></div>
 
 								<div class="clearer">&nbsp;</div>
 
@@ -223,6 +132,41 @@
 
 						</fieldset>
 
+					</form>
+					<br>
+					<h4>{{new}}</h4>
+					<h4>{{message}}</h4>
+					<br>
+					<br>
+					<h1>Get a Promise</h1>
+					<div class="archive-separator"></div>
+					<form action="/get_trans" method="get">
+						<fieldset>
+							<div class="form-row">
+
+								<div class="form-property form-required">Transaction Hash</div>
+								<div class="form-value"><input type="text" size="60" name="hash" class="text" /></div>
+
+								<div class="clearer">&nbsp;</div>
+
+							</div>
+
+							<div class="form-row form-row-submit">
+
+								<div class="form-value"><input type="submit" class="button" value="Get &#187;" /></div>
+
+								<div class="clearer">&nbsp;</div>
+
+							</div>
+
+							<br>
+							<h4>Sender: {{sender}}</h4>
+							<h4>Recipient: {{recipient}}</h4>
+							<h4>Value: {{value}}</h4>
+							<h4>Content:</h4>
+							<textarea rows="15" cols="80">{{data}}</textarea>
+
+						</fieldset>
 					</form>
 
 				</div>

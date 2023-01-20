@@ -123,16 +123,16 @@ def new_transaction():
         'message': f'Transaction will be added to the Block {index}',
         'transaction hash': hash
     }
-    return jsonify(response, 200)
+    return jsonify(response), 200
 
 @app.route('/transaction/find', methods=['POST'])
 def find_transaction():
     values = request.get_json()
     res, flag = blockchain.get_transaction(values['hash'])
     if flag:
-        return jsonify(res, 200)
+        return jsonify(res), 200
     else:
-        return jsonify(res, 500)
+        return jsonify(res), 500
 
 @app.route('/chain', methods=['GET'])
 def full_chain():

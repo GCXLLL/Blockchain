@@ -218,6 +218,77 @@ def create():
     return render_template('account.html', **kwargs)
 
 
+@app.route('/new_trans')
+def new_trans():
+    nodes = {
+        'sender': request.args.get("sender"),
+         'recipient': request.args.get("recipient"),
+         'amount': request.args.get("amount"),
+         'data': request.args.get("data"),
+         'sk': request.args.get("sk")
+             }
+    global current_node
+    try:
+        response = requests.post(f'http://{current_node}/transaction/new', json=nodes)
+    except:
+        kwargs = {
+            "new": 'Fail to connect to blockchain'
+        }
+        return render_template('notarization.html', **kwargs)
+    if response.status_code == 200:
+        kwargs = {
+            "new": 'Transaction Hash: ' + response.json()['transaction hash'],
+            "message": response.json()['message']
+        }
+
+    elif response.status_code == 400:
+        kwargs = {
+            "new": 'Value is missed'
+        }
+
+    else:
+        kwargs = {
+            "new": 'Fail to connect to blockchain'
+        }
+    return render_template('notarization.html', **kwargs)
+
+
+@app.route('/get_trans')
+def get_trans():
+    node = request.args.get("hash")
+    print(node)
+    nodes = {'hash': node}
+    global current_node
+    try:
+        response = requests.post(f'http://{current_node}/transaction/find', json=nodes)
+    except:
+        kwargs = {
+            "sender": None,
+            "recipient": None,
+            "value": None,
+            "data": 'Fail to connect to blockchain'
+        }
+        return render_template('notarization.html', **kwargs)
+    if response.status_code == 200:
+        kwargs = json.loads(response.content)
+
+    elif response.status_code == 500:
+        kwargs = {
+            "sender": None,
+            "recipient": None,
+            "value": None,
+            "data": json.loads(response.content)['Warning']
+        }
+    else:
+        kwargs = {
+            "sender": None,
+            "recipient": None,
+            "value": None,
+            "data": 'Fail to connect to blockchain'
+        }
+    return render_template('notarization.html', **kwargs)
+
+
 @app.route('/empty_page')
 def empty_page():
     return render_template('empty_page.html')
