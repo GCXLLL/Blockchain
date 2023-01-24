@@ -143,9 +143,9 @@ table.data-table tr.even td {background: #FCFCFC;}
 .smaller {font-size: 0.8em;}
 .smallest {font-size: 0.7em;}
 
-.large {font-size: 1.1em;}
-.larger {font-size: 1.2em;}
-.largest {font-size: 1.3em;}
+.large {font-size: 1.2em; text-align:justify;}
+.larger {font-size: 1.3em; text-align:justify;}
+.largest {font-size: 1.4em;}
 
 .hidden {display: none;}
 
