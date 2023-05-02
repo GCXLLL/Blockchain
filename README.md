@@ -1,4 +1,4 @@
-# Blockchain Node Client Program
+# Blockchain Client Node Program
 
 This project is a blockchain mode client program written in Python 3 based on Flask, following the mechanisms of Ethereum blockchain. I have realized all basic functions such as mining, creating account, creating transactions, inter-node interaction, etc.
 
